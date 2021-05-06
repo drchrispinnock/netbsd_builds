@@ -1,0 +1,53 @@
+#    create  libctf/.depend    Connection to ec2-3-8-10-130.eu-west-2.compute.amazonaws.com closed by remote host.
+Connection to ec2-3-8-10-130.eu-west-2.compute.amazonaws.com closed..amzn2.aarch
+chris@MacMini-7972% t-mkdep -s .o\ .lo\ .d -d -f .depend ctf_create.d ctf_decl.d
+ ctf_error.d ctf_hash.d ctf_labels.d ctf_lib.d ctf_lookup.d ctf_open.d ctf_subr.
+d ctf_types.d ctf_util.d
+#   compile  libctf/ctf_create.lo
+cc -O   -DCTF_OLD_VERSIONS -I/home/ec2-user/netbsd-current/src/tools/libctf/../c
+ompat  -I/home/ec2-user/netbsd-current/src/tools/libctf/../../external/cddl/osne
+t/sys  -I/home/ec2-user/netbsd-current/src/tools/libctf/../../external/cddl/osne
+t/include  -I/home/ec2-user/netbsd-current/src/tools/libctf/../../external/cddl/
+osnet/dist/head  -I/home/ec2-user/netbsd-current/src/tools/libctf/../../external
+/cddl/osnet/dist/common/ctf  -I/home/ec2-user/netbsd-current/src/tools/libctf/..
+/../external/cddl/osnet/dist/lib/libctf/common  -I/home/ec2-user/netbsd-current/
+src/tools/libctf/../../external/cddl/osnet/dist/uts/common  -I/home/ec2-user/net
+bsd-current/src/tools/libctf/../../external/bsd/elftoolchain/dist/libelf -DHAVE_
+NBTOOL_CONFIG_H=1 -D_FILE_OFFSET_BITS=64  -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOU
+RCE -D_FILE_OFFSET_BITS=64 -I/home/ec2-user/netbsd-current/src/obj/tooldir.Linux
+-4.14.231-173.361.amzn2.aarch64-aarch64/include/compat -I/home/ec2-user/netbsd-c
+urrent/src/tools/compat  -DHAVE_NBTOOL_CONFIG_H=1 -D_FILE_OFFSET_BITS=64 -I/home
+/ec2-user/netbsd-current/src/obj/tooldir.Linux-4.14.231-173.361.amzn2.aarch64-aa
+rch64/include -I/home/ec2-user/netbsd-current/src/obj/tooldir.Linux-4.14.231-173
+.361.amzn2.aarch64-aarch64/include/nbinclude -c -o ctf_create.lo.o    /home/ec2-
+user/netbsd-current/src/tools/libctf/../../external/cddl/osnet/dist/common/ctf/c
+tf_create.c
+In file included from /home/ec2-user/netbsd-current/src/tools/libctf/../compat/c
+ompat_defs.h:100:0,
+                 from /home/ec2-user/netbsd-current/src/obj/tooldir.Linux-4.14.2
+31-173.361.amzn2.aarch64-aarch64/include/compat/nbtool_config.h:928,
+                 from /home/ec2-user/netbsd-current/src/tools/libctf/../../exter
+nal/cddl/osnet/dist/common/ctf/ctf_create.c:23:
+/home/ec2-user/netbsd-current/src/tools/libctf/../../external/cddl/osnet/sys/sys
+/types.h:66:20: error: unknown type name '__hide_longlong_t'
+ #define longlong_t __hide_longlong_t
+                    ^
+
+*** Failed target:  ctf_create.lo
+*** Failed command: cc -O -DCTF_OLD_VERSIONS -I/home/ec2-user/netbsd-current/src
+/tools/libctf/../compat -I/home/ec2-user/netbsd-current/src/tools/libctf/../../e
+xternal/cddl/osnet/sys -I/home/ec2-user/netbsd-current/src/tools/libctf/../../ex
+ternal/cddl/osnet/include -I/home/ec2-user/netbsd-current/src/tools/libctf/../..
+/external/cddl/osnet/dist/head -I/home/ec2-user/netbsd-current/src/tools/libctf/
+../../external/cddl/osnet/dist/common/ctf -I/home/ec2-user/netbsd-current/src/to
+ols/libctf/../../external/cddl/osnet/dist/lib/libctf/common -I/home/ec2-user/net
+bsd-current/src/tools/libctf/../../external/cddl/osnet/dist/uts/common -I/home/e
+c2-user/netbsd-current/src/tools/libctf/../../external/bsd/elftoolchain/dist/lib
+elf -DHAVE_NBTOOL_CONFIG_H=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGE
+FILE64_SOURCE -D_FILE_OFFSET_BITS=64 -I/home/ec2-user/netbsd-current/src/obj/too
+ldir.Linux-4.14.231-173.361.amzn2.aarch64-aarch64/include/compat -I/home/ec2-use
+r/netbsd-current/src/tools/compat -DHAVE_NBTOOL_CONFIG_H=1 -D_FILE_OFFSET_BITS=6
+4 -I/home/ec2-user/netbsd-current/src/obj/tooldir.Linux-4.14.231-173.361.amzn2.a
+arch64-aarch64/include -I/home/ec2-user/netbsd-current/src/obj/tooldir.Linux-4.1
+4.231-173.361.amzn2.aarch64-aarch64/include/nbinclude -c -o ctf_create.lo.o /hom
+e/ec2-user/netbsd-current/src/tools/libctf
