@@ -1,6 +1,5 @@
 
-I ran build.sh on a beefy server t3.xlarge.
-I'm not massively impressed.
+I ran build.sh on a beefy server t3.xlarge. Timings:
 
 ubuntu@ip-172-31-12-19:~/netbsd-current/src$ sh ../../buildwrapper.sh -j 8 -c -q -x amd64 sun2 sparc64
 Wed May  5 14:13:43 UTC 2021: Building NetBSD sources on ip-172-31-12-19 (Linux/x86_64/5.4.0-1045-aws)
