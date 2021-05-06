@@ -1,0 +1,14 @@
+
+I ran build.sh on a beefy server t3.xlarge.
+I'm not massively impressed.
+
+ubuntu@ip-172-31-12-19:~/netbsd-current/src$ sh ../../buildwrapper.sh -j 8 -c -q -x amd64 sun2 sparc64
+Wed May  5 14:13:43 UTC 2021: Building NetBSD sources on ip-172-31-12-19 (Linux/x86_64/5.4.0-1045-aws)
+Wed May  5 14:13:43 UTC 2021: Targets: amd64 sun2 sparc64
+Wed May  5 14:13:43 UTC 2021: Failures logged to /home/ubuntu/netbsd-current/buildlogs/202105051413/202105051413-fails
+Wed May  5 14:13:43 UTC 2021: amd64 build with X started - logging to /home/ubuntu/netbsd-current/buildlogs/202105051413/202105051413-amd64
+Wed May  5 16:27:34 UTC 2021: amd64 build with X completed
+Wed May  5 16:27:34 UTC 2021: amd64 release with X started
+Wed May  5 17:02:48 UTC 2021: amd64 release with X completed
+Wed May  5 17:02:48 UTC 2021: sun2 build with X started - logging to /home/ubuntu/netbsd-current/buildlogs/202105051413/202105051702-sun2
+
