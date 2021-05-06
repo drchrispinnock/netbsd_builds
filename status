@@ -2,16 +2,32 @@
 
 		pkg	x86	arm64
 
-OpenBSD 6.9
+OpenBSD 6.9		n*
 FreeBSD 13		y
 
-Amazon Linux 2	rpm/yum	y	n
-Red Hat Ent 8	rpm/yum	y
+Amazon Linux 2	rpm/yum	y	n+
+Red Hat Ent 8	rpm/yum	y	y
 
 Debian 10	deb/apt	y
-Ubuntu 20.4	deb/apt y
+Ubuntu 20.4	deb/apt	y	y
 
 SUSE Ent 15	zypper	y
+Gentoo		emerge  y
 
 macOS Big Sur		y
+
+
+* PR#56150
+In tools the library liblto_plugin.so gets created with version
+numbers 0.0 and so cannot be found later on in the build process.
+
++ PR#56149
+In file included from /home/ec2-user/netbsd-current/src/tools/libctf/../compat/c
+ompat_defs.h:100:0,
+                 from /home/ec2-user/netbsd-current/src/obj/tooldir.Linux-4.14.2
+31-173.361.amzn2.aarch64-aarch64/include/compat/nbtool_config.h:928,
+                 from /home/ec2-user/netbsd-current/src/tools/libctf/../../exter
+nal/cddl/osnet/dist/common/ctf/ctf_create.c:23:
+/home/ec2-user/netbsd-current/src/tools/libctf/../../external/cddl/osnet/sys/sys
+/types.h:66:20: error: unknown type name '__hide_longlong_t'
 

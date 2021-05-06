@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Use this direct for FreeBSD
+# Use this direct for FreeBSD or OpenBSD
+# Linux will need addition packages
 
 cdn='http://nycdn.netbsd.org/pub/NetBSD-daily/HEAD/latest/source/sets/'
 sourcefiles="src.tgz syssrc.tgz sharesrc.tgz gnusrc.tgz xsrc.tgz"
