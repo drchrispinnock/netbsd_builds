@@ -1,0 +1,17 @@
+6/5/2021	
+
+		pkg	x86	arm64
+
+OpenBSD 6.9
+FreeBSD 13		y
+
+Amazon Linux 2	rpm/yum	y	n
+Red Hat Ent 8	rpm/yum	y
+
+Debian 10	deb/apt	y
+Ubuntu 20.4	deb/apt y
+
+SUSE Ent 15	zypper	y
+
+macOS Big Sur		y
+
