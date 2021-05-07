@@ -144,18 +144,11 @@ qecho() {
 }
 
 fecho() {
-<<<<<<< HEAD
 	dt=`date +%Y%m%d%H%M`
 	echo -n "$dt: "
 	printf "\033[31;1m$1\033[0m"
 	echo "$dt: $1" >> $masterlogfile
 	echo "$dt: $1" >> $faillogfile
-=======
-	echo -n "`date`: "
-	printf "\033[31;1m$1\033[0m\n"
-	echo "`date`: $1" >> $masterlogfile
-	echo "`date`: $1" >> $faillogfile
->>>>>>> 43ad53902bea66e5a2a2e7a66377e2d32bcada97
 }
 
 
