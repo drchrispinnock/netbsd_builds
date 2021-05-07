@@ -142,7 +142,7 @@ qecho() {
 
 fecho() {
 	echo -n "`date`: "
-	printf "\033[31;1m$1\033[0m"
+	printf "\033[31;1m$1\033[0m\n"
 	echo "`date`: $1" >> $masterlogfile
 	echo "`date`: $1" >> $faillogfile
 }
