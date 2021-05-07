@@ -43,7 +43,7 @@ updateflag="-u"
 #otherflags="-P" # Does not work on Darwin
 otherflags=""
 buildx=0	# X Windows
-withX=" "
+withX=""
 
 # Assume we are in the src directory
 #
@@ -179,7 +179,7 @@ while [ 1 = 1 ]; do
 			if [ "$machine" = "sun2" ]; then
 				qecho "X known broken on $machine - skipping X"
 				xflags=""
-				withX=" (X broken - skipped)"	
+				withX=""
 			else
 				xflags="-x -X $sourceroot/xsrc"
 				withX=" with X"
