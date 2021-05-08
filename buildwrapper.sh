@@ -151,7 +151,7 @@ qecho() {
 fecho() {
 	dt=`date +%Y%m%d%H%M`
 	echo -n "$dt: "
-	printf "\033[31;1m$1\033[0m"
+	printf "\033[31;1m$1\033[0m\n"
 	echo "$dt: $1" >> $masterlogfile
 	echo "$dt: $1" >> $faillogfile
 }
@@ -224,7 +224,7 @@ while [ 1 = 1 ]; do
 
 	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
 		qecho "Uploading results to $uploadurl"
-		scp -r $runlogdir $uploadurl
+		scp -qr $runlogdir $uploadurl
 	fi
 	echo ""
 	failure=0
