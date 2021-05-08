@@ -55,7 +55,6 @@ fi
 
 sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs/`date +%Y%m%d%H%M`
-mkdir -p "$logdir"
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] [targets]
   -A  build all architecture targets
@@ -92,6 +91,8 @@ while [ $# -gt 0 ]; do
 	esac
 	shift
 done
+
+mkdir -p "$logdir"
 
 xflags=""
 if [ "$buildx" = "1" ]; then
@@ -132,20 +133,23 @@ export MAKEOBJDIRPREFIX=$sourceroot'/obj/${MACHINE}${MACHINE_ARCH:N${MACHINE}:C/
 
 
 decho() {
-	[ "$quiet" != "2" ] && echo "`date`: $1"
-	echo "`date`: $1" >> $masterlogfile
+	dt=`date +%Y%m%d%H%M`
+	[ "$quiet" != "2" ] && echo "$dt: $1"
+	echo "$dt: $1" >> $masterlogfile
 }
 
 qecho() {
-	echo "`date`: $1"
-	echo "`date`: $1" >> $masterlogfile
+	dt=`date +%Y%m%d%H%M`
+	echo "$dt: $1"
+	echo "$dt: $1" >> $masterlogfile
 }
 
 fecho() {
-	echo -n "`date`: "
-	printf "\033[31;1m$1\033[0m\n"
-	echo "`date`: $1" >> $masterlogfile
-	echo "`date`: $1" >> $faillogfile
+	dt=`date +%Y%m%d%H%M`
+	echo -n "$dt: "
+	printf "\033[31;1m$1\033[0m"
+	echo "$dt: $1" >> $masterlogfile
+	echo "$dt: $1" >> $faillogfile
 }
 
 
