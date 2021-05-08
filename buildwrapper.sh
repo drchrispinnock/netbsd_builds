@@ -164,8 +164,8 @@ failure=0
 while [ 1 = 1 ]; do
 	runlogdir="$logdir/`date +%Y%m%d%H%M`"
 	mkdir -p $runlogdir
-	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master
-	faillogfile=$runlogdir/`date +%Y%m%d%H%M`-fails
+	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
+	faillogfile=$runlogdir/`date +%Y%m%d%H%M`-fails.txt
 
 	qecho "Building NetBSD sources on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	decho "Targets: $targets"
@@ -173,7 +173,7 @@ while [ 1 = 1 ]; do
 
 	# Update from CVS
 	#
-	cvslogfile="$logdir/`date +%Y%m%d%H%M`-cvsupdate"
+	cvslogfile="$logdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
 
 	if [ "$updatecvs" != "0" ]; then
 		decho "Updating sources..."
@@ -197,7 +197,7 @@ while [ 1 = 1 ]; do
 				withX=" with X"
 			fi
 		fi
-		logfile="$logdir/`date +%Y%m%d%H%M`-$machine"
+		logfile="$runlogdir/`date +%Y%m%d%H%M`-$machine"".txt"
 		qecho "$machine build$withX started - logging to $logfile"
 		touch $logfile
 		[ "$quiet" = "0" ] && tail -f $logfile &
