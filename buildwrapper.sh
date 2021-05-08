@@ -160,6 +160,7 @@ fecho() {
 # Here we go
 #
 
+failure=0
 while [ 1 = 1 ]; do
 	runlogdir="$logdir/`date +%Y%m%d%H%M`"
 	mkdir -p $runlogdir
@@ -203,12 +204,14 @@ while [ 1 = 1 ]; do
 		./build.sh -j $jobs -U $updateflag $xflags $otherflags -m $machine build >> $logfile 2>&1
 		if [ "$?" != "0" ]; then
 			fecho "$machine build$withX FAILED"
+			failure=1
 		else
 			decho "$machine build$withX completed"
 			qecho "$machine release$withX started"
 			./build.sh -j $jobs -U -u $otherflags $xflags -m $machine release >> $logfile 2>&1
 			if [ "$?" != "0" ]; then
 				fecho "$machine release$withX FAILED"
+				failure=1
 			else
 				qecho "$machine release$withX completed"
 				[ "$keeplogs" = "0" ] && rm -f "$logfile"
@@ -219,11 +222,11 @@ while [ 1 = 1 ]; do
 	done
 	qecho "Build completed ==="
 
-	if [ "$uploadr" = "1" ]; then
+	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
 		qecho "Uploading results to $uploadurl"
 		scp -r $runlogdir $uploadurl
 	fi
 	echo ""
-
+	failure=0
 	[ "$continuous" != "1" ] && exit 0;
 done
