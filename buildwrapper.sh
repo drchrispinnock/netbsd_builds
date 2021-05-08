@@ -9,7 +9,8 @@
 #
 mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
 targets="$mypref" # Default
-uploadtarget="www.netbsd.org:public_html"
+uploadurl="www.netbsd.org:public_html"
+uploadr=1
 
 # Tier 1 platforms (subset)
 #
@@ -54,9 +55,10 @@ if [ ! -f "build.sh" ]; then
 fi
 
 sourceroot=`(cd .. && pwd)`
-logdir=$sourceroot/buildlogs/`date +%Y%m%d%H%M`
+logdir=$sourceroot/buildlogs
 
-USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] [targets]
+USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
+		[-n] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS, implies -1 (no point in repeating otherwise)
@@ -68,6 +70,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] [targets]
   -j n  supply n to -j on build.sh
   -l logdir - use alternative log dir
   -x  attempt to build X as well
+  -n  don't upload logs
   targets given on the command line override -A and defaults
 "
 
@@ -78,6 +81,7 @@ while [ $# -gt 0 ]; do
         -j)	jobs="$2"; shift; ;;
         -l)	logdir="$2"; shift; ;;
         -c)	updatecvs=0; continuous=0; ;;
+        -n)	uploadr=0; ;;
         -q)	quiet=1; ;;
         -Q)	quiet=2; ;;
         -k)	keeplogs=1; ;;
@@ -157,8 +161,10 @@ fecho() {
 #
 
 while [ 1 = 1 ]; do
-	masterlogfile=$logdir/`date +%Y%m%d%H%M`-master
-	faillogfile=$logdir/`date +%Y%m%d%H%M`-fails
+	runlogdir="$logdir/`date +%Y%m%d%H%M`"
+	mkdir -p $runlogdir
+	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master
+	faillogfile=$runlogdir/`date +%Y%m%d%H%M`-fails
 
 	qecho "Building NetBSD sources on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	decho "Targets: $targets"
@@ -212,6 +218,11 @@ while [ 1 = 1 ]; do
 
 	done
 	qecho "Build completed ==="
+
+	if [ "$uploadr" = "1" ]; then
+		qecho "Uploading results to $uploadurl"
+		scp -r $runlogdir $uploadurl
+	fi
 	echo ""
 
 	[ "$continuous" != "1" ] && exit 0;
