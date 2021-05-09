@@ -192,8 +192,8 @@ while [ 1 = 1 ]; do
 #				xflags=""
 #				withX=""
 #			else
-				xflags="-x -X $sourceroot/xsrc"
-				withX=" with X"
+			xflags="-x -X $sourceroot/xsrc"
+			withX=" with X"
 #			fi
 		fi
 		logfile="$runlogdir/`date +%Y%m%d%H%M`-$machine"".txt"
