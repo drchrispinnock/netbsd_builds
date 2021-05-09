@@ -173,7 +173,7 @@ while [ 1 = 1 ]; do
 
 	# Update from CVS
 	#
-	cvslogfile="$logdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
+	cvslogfile="$runlogdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
 
 	if [ "$updatecvs" != "0" ]; then
 		decho "Updating sources..."
