@@ -101,8 +101,8 @@ mkdir -p "$logdir"
 xflags=""
 if [ "$buildx" = "1" ]; then
 	if [ ! -d "$sourceroot/xsrc" ]; then
-		buildx = 0;
-		decho "Cannot find xsrc - won't build X"
+		echo "Cannot find xsrc!" >&2
+		exit 1
 	fi
 fi
 sleep 5
@@ -150,8 +150,7 @@ qecho() {
 
 fecho() {
 	dt=`date +%Y%m%d%H%M`
-	echo -n "$dt: "
-	printf "\033[31;1m$1\033[0m\n"
+	printf "$dt: \033[31;1m$1\033[0m\n"
 	echo "$dt: $1" >> $masterlogfile
 	echo "$dt: $1" >> $faillogfile
 }
@@ -188,14 +187,14 @@ while [ 1 = 1 ]; do
 	for machine in $targets; do
 	
 		if [ "$buildx" = "1" ]; then
-			if [ "$machine" = "sun2" ]; then
-				qecho "X known broken on $machine - skipping X"
-				xflags=""
-				withX=""
-			else
-				xflags="-x -X $sourceroot/xsrc"
-				withX=" with X"
-			fi
+#			if [ "$machine" = "sun2" ]; then
+#				qecho "X known broken on $machine - skipping X"
+#				xflags=""
+#				withX=""
+#			else
+			xflags="-x -X $sourceroot/xsrc"
+			withX=" with X"
+#			fi
 		fi
 		logfile="$runlogdir/`date +%Y%m%d%H%M`-$machine"".txt"
 		qecho "$machine build$withX started - logging to $logfile"
