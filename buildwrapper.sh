@@ -97,7 +97,7 @@ while [ $# -gt 0 ]; do
 done
 
 mkdir -p "$logdir"
-$statefile="$logdir/statefile"
+statefile="$logdir/statefile"
 
 xflags=""
 if [ "$buildx" = "1" ]; then
@@ -203,7 +203,7 @@ while [ 1 = 1 ]; do
 		# Should we skip to something
 		#
 		if [ "$state" != "" ]; then
-			[ "$state" != "$machine" ] && next!
+			[ "$state" != "$machine" ] && continue
 			state=""
 		fi
 
