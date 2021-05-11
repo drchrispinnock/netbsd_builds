@@ -97,6 +97,7 @@ while [ $# -gt 0 ]; do
 done
 
 mkdir -p "$logdir"
+$statefile="$logdir/statefile"
 
 xflags=""
 if [ "$buildx" = "1" ]; then
@@ -159,33 +160,56 @@ fecho() {
 # Here we go
 #
 
+
+previous=0
+state=""
+if [ -f "$statefile" ]; then
+	state=`cat $statefile`
+	previous=1
+fi
+
 failure=0
 while [ 1 = 1 ]; do
 	runlogdir="$logdir/`date +%Y%m%d%H%M`"
 	mkdir -p $runlogdir
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
-	faillogfile=$runlogdir/`date +%Y%m%d%H%M`-fails.txt
+	faillogfile=$logdir/failures.txt
 
 	qecho "Building NetBSD sources on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	decho "Targets: $targets"
 	decho "Failures logged to $faillogfile"
 
-	# Update from CVS
-	#
-	cvslogfile="$runlogdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
+	if [ "$previous" = "1" ]; then
+		qecho "Detected state. Attempting to start from $state"
+	else
+	
+		# Update from CVS
+		#
+		cvslogfile="$runlogdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
 
-	if [ "$updatecvs" != "0" ]; then
-		decho "Updating sources..."
-		[ "$quiet" = "0" ] && tail -f $cvslogfile &
-		cvs -q up -dP >> "$cvslogfile" 2>&1
-		[ "$buildx" = "1" ] && ( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+		if [ "$updatecvs" != "0" ]; then
+			decho "Updating sources..."
+			[ "$quiet" = "0" ] && tail -f $cvslogfile &
+			cvs -q up -dP >> "$cvslogfile" 2>&1
+			[ "$buildx" = "1" ] && ( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+		fi
+
 	fi
-
 	# Build each machine, then build the release
 	# (separated out because the build can work but not the release)
 	#
 	for machine in $targets; do
-	
+
+		# Should we skip to something
+		#
+		if [ "$state" != "" ]; then
+			[ "$state" != "$machine" ] && next!
+			state=""
+		fi
+
+		echo "$machine" > $statefile
+
+
 		if [ "$buildx" = "1" ]; then
 #			if [ "$machine" = "sun2" ]; then
 #				qecho "X known broken on $machine - skipping X"
@@ -217,6 +241,8 @@ while [ 1 = 1 ]; do
 				[ "$keeplogs" = "1" ] && gzip "$logfile"
 			fi
 		fi
+
+		rm -f $statefile
 
 	done
 	qecho "Build completed ==="
