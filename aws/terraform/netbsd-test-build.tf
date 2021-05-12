@@ -30,8 +30,11 @@ resource "aws_instance" "freebsd" {
   instance_type          = "t3.xlarge"
   vpc_security_group_ids = ["sg-8f283bee"]
   key_name               = "deployer-key"
-
+	ebs_block_device {
+	    device_name = "/dev/sda1"
+	    volume_size = 30
+  	}
   tags = {
-    Name = "FreeBSD"
+    Name = "FreeBSD 13 Build Server"
   }
 }
