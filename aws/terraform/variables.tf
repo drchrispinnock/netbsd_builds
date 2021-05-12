@@ -14,11 +14,11 @@ variable "openbsd-ami" {
 variable "freebsd-13-ami" {
   description = "AMI string of FreeBSD 13 (x86) in eu-west-2"
   type        = string
-  default     = "ami-0008f3d6d4c41d1f1"
+  default     = "ami-0c799aeda60f4e2c4"
 }
 
-variable "freebsd-12-ami" {
-  description = "AMI string of FreeBSD 12 (x86) in eu-west-2"
-  type        = string
-  default     = "ami-0008f3d6d4c41d1f1"
-}
+#variable "freebsd-12-ami" {
+#  description = "AMI string of FreeBSD 12 (x86) in eu-west-2"
+#  type        = string
+#  default     = "ami-0008f3d6d4c41d1f1"
+#}
