@@ -10,7 +10,7 @@
 mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
 targets="$mypref" # Default
 uploadurl="www.netbsd.org:public_html"
-uploadr=1
+uploadr=0
 
 # Tier 1 platforms (subset)
 #
