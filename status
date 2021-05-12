@@ -1,4 +1,4 @@
-7/5/2021	
+12/5/2021	
 
 y - ./build.sh -U -m amd64 build works
 n - Where are build has failed, see the footnote for details)
@@ -6,25 +6,25 @@ n - Where are build has failed, see the footnote for details)
 
 			x86	arm64
 
-OpenBSD 6.9		n*	-
-FreeBSD 13		y	y
-FreeBSD 12.2		y	y
-FreeBSD 11.4		y	-	
-FreeBSD 10.4		y	-	
+OpenBSD 6.9		n*	-	(9/5/2021)
+FreeBSD 13		y	y	(9/5/2021)
+FreeBSD 12.2		y	y	(9/5/2021)
+FreeBSD 11.4		y	-	(9/5/2021)
+FreeBSD 10.4		y	-	(9/5/2021)
 
-Amazon Linux 2		y	n+
-Red Hat Ent 8		y	y
+Amazon Linux 2		y	n+	(9/5/2021)
+Red Hat Ent 8		y	y	(9/5/2021)
 
-Debian 10		y	y
-Ubuntu 20.4		y	y
-Ubuntu 18.04		y	n+
+Debian 10		y	y	(9/5/2021)
+Ubuntu 20.4		y	y	(9/5/2021)
+Ubuntu 18.04		y	n+	(9/5/2021)
 
-SUSE Ent 15		y	n+
-Gentoo			y	-
+SUSE Ent 15		y	n+	(9/5/2021)
+Gentoo			y	-	(9/5/2021)
 
-macOS Big Sur		y	-
-macOS Catalina		y	-
-macOS High Sierra	**	-
+macOS Big Sur		y	-	(9/5/2021)
+macOS Catalina		y	-	(9/5/2021)
+macOS High Sierra	y	-	(12/5/2021)
 
 System Details
 --------------
