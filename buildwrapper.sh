@@ -11,6 +11,7 @@ mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
 targets="$mypref" # Default
 uploadurl="www.netbsd.org:public_html"
 uploadr=0
+removestate=0
 
 # Tier 1 platforms (subset)
 #
@@ -58,7 +59,7 @@ sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
-		[-n] [targets]
+		[-n] [-Z] [-R} [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS, implies -1 (no point in repeating otherwise)
@@ -71,6 +72,8 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -l logdir - use alternative log dir
   -x  attempt to build X as well
   -n  don't upload logs
+  -Z  remove state
+  -R  restart, attempt to start from state file 
   targets given on the command line override -A and defaults
 "
 
@@ -87,6 +90,8 @@ while [ $# -gt 0 ]; do
         -k)	keeplogs=1; ;;
         -D)	updateflag=""; ;;
         -x)	buildx=1; ;;
+        -Z)	removestate=1; ;;
+        -R)	removestate=0; ;;
         -h|--help)              
                                 echo "$USAGE"; exit ;;
         -*)             echo "${0##*/}: unknown option \"$1\"" 1>&2
@@ -163,6 +168,10 @@ fecho() {
 
 previous=0
 state=""
+if [ "$removestate" = "1" ]; then
+	rm -f "$statefile"
+fi
+
 if [ -f "$statefile" ]; then
 	state=`cat $statefile`
 	previous=1
