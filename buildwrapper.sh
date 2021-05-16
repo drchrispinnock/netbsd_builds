@@ -12,6 +12,7 @@ targets="$mypref" # Default
 uploadurl="www.netbsd.org:public_html"
 uploadr=0
 removestate=0
+sleepbetween=18000	# 5 hours
 
 # Tier 1 platforms (subset)
 #
@@ -113,7 +114,6 @@ if [ "$buildx" = "1" ]; then
 		buildx="0"
 	fi
 fi
-sleep 5
 # Tier 1 platforms
 #
 #supported="amd64 i386 sparc64 evbppc hpcarm evbarm64-el evbarm64-eb evbmips64-eb evbmips64-el evbmips-eb evbmips-el"
@@ -180,9 +180,17 @@ if [ -f "$statefile" ]; then
 fi
 
 failure=0
+
+firstrun=1
+
 while [ 1 = 1 ]; do
-	runlogdir="$logdir/`date +%Y%m%d%H%M`"
+
+	runlogdate=`date +%Y%m%d%H%M`
+	runlogdir="$logdir/$runlogdate"
 	mkdir -p $runlogdir
+
+	(cd $logdir && rm current && ln -sf $runlogdate current)
+
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
 	faillogfile=$logdir/failures.txt
 
@@ -205,12 +213,40 @@ while [ 1 = 1 ]; do
 			[ "$quiet" = "0" ] && tail -f $cvslogfile &
 			cvs -q up -dP >> "$cvslogfile" 2>&1
 			[ "$buildx" = "1" ] && ( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+
+			egrep "^C" "$cvslogfile" 2>&1 >/dev/null
+			if [ "$?" = "0" ]; then
+				fecho "CONFLICTS IN CVS UPDATE - BAILING"
+				exit 5
+			fi
+			
+			egrep "^M" "$cvslogfile" 2>&1 >/dev/null
+			if [ "$?" = "0" ]; then
+				decho "Warning - merges detected in source tree"
+			fi
+
+			egrep "^(U|P|M)" "$cvslogfile" 2>&1 >/dev/null
+			if [ "$?" = "1" ]; then
+				if [ "$firstrun" != "1" ]; then			
+					# Second run wait
+					decho "No changes in sources since last update - sleeping"
+					sleep $sleepbetween
+					continue
+
+				fi	
+			qecho "No changes in sources since last update"
+			firstrun=0
+
+			fi
+
 		fi
 
 	fi
 	# Build each machine, then build the release
 	# (separated out because the build can work but not the release)
 	#
+
+
 	for machine in $targets; do
 
 		# Should we skip to something
