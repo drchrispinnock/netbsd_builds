@@ -190,7 +190,6 @@ while [ 1 = 1 ]; do
 
 	if [ "$previous" = "1" ]; then
 		qecho "Detected state. Attempting to start from $state"
-		previous=0
 	else
 	
 		# Update from CVS
@@ -234,9 +233,10 @@ while [ 1 = 1 ]; do
 		objdir="../objects/$machine"
 		mkdir -p $objdir
 
+		starttime=`date +%Y%m%d%H%M%S`
 		qecho "$machine build$withX started"
-		qecho "$machine logging to $logfile"
-		qecho "$machine objects at $objdir"
+		decho "$machine logging to $logfile"
+		decho "$machine objects at $objdir"
 		touch $logfile
 		
 		flags="-O $objdir -j $jobs -U $updateflag $xflags $otherflags -m $machine"
@@ -246,7 +246,12 @@ while [ 1 = 1 ]; do
 			fecho "$machine build$withX FAILED"
 			failure=1
 		else
-			decho "$machine build$withX completed"
+
+			endtime=`date +%Y%m%d%H%M%S`
+			duration=`expr $endtime - $starttime`
+			partial=""
+			[ "$previous" = "1" ] && partial=" (resumed)"
+			qecho "$machine build$withX completed in $duration seconds$partial"
 			qecho "$machine release$withX started"
 			./build.sh $flags release >> $logfile 2>&1
 			if [ "$?" != "0" ]; then
@@ -260,7 +265,7 @@ while [ 1 = 1 ]; do
 		fi
 
 		rm -f $statefile
-
+		previous=0
 	done
 	qecho "Build completed ==="
 
