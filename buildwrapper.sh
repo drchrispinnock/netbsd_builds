@@ -186,7 +186,9 @@ while [ 1 = 1 ]; do
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
 	faillogfile=$logdir/failures.txt
 
-	qecho "Building NetBSD sources on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
+	targetrelease=`sys/conf/osrelease.sh`	# May change between builds
+
+	qecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	decho "Targets: $targets"
 	decho "Failures logged to $faillogfile"
 
