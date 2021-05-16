@@ -139,7 +139,7 @@ export RELEASEDIR="$sourceroot/releases"
 
 # Seperate out all objects
 #
-export MAKEOBJDIRPREFIX=$sourceroot'/obj/${MACHINE}${MACHINE_ARCH:N${MACHINE}:C/(.)/-\1/}'
+#export MAKEOBJDIRPREFIX=$sourceroot'/obj/${MACHINE}${MACHINE_ARCH:N${MACHINE}:C/(.)/-\1/}'
 
 
 decho() {
@@ -190,6 +190,7 @@ while [ 1 = 1 ]; do
 
 	if [ "$previous" = "1" ]; then
 		qecho "Detected state. Attempting to start from $state"
+		previous=0
 	else
 	
 		# Update from CVS
@@ -218,7 +219,6 @@ while [ 1 = 1 ]; do
 
 		echo "$machine" > $statefile
 
-
 		if [ "$buildx" = "1" ]; then
 #			if [ "$machine" = "sun2" ]; then
 #				qecho "X known broken on $machine - skipping X"
@@ -230,17 +230,25 @@ while [ 1 = 1 ]; do
 #			fi
 		fi
 		logfile="$runlogdir/`date +%Y%m%d%H%M`-$machine"".txt"
-		qecho "$machine build$withX started - logging to $logfile"
+
+		objdir="../objects/$machine"
+		mkdir -p $objdir
+
+		qecho "$machine build$withX started"
+		qecho "$machine logging to $logfile"
+		qecho "$machine objects at $objdir"
 		touch $logfile
+		
+		flags="-O $objdir -j $jobs -U $updateflag $xflags $otherflags -m $machine"
 		[ "$quiet" = "0" ] && tail -f $logfile &
-		./build.sh -j $jobs -U $updateflag $xflags $otherflags -m $machine build >> $logfile 2>&1
+		./build.sh $flags build >> $logfile 2>&1
 		if [ "$?" != "0" ]; then
 			fecho "$machine build$withX FAILED"
 			failure=1
 		else
 			decho "$machine build$withX completed"
 			qecho "$machine release$withX started"
-			./build.sh -j $jobs -U -u $otherflags $xflags -m $machine release >> $logfile 2>&1
+			./build.sh $flags release >> $logfile 2>&1
 			if [ "$?" != "0" ]; then
 				fecho "$machine release$withX FAILED"
 				failure=1
