@@ -186,7 +186,7 @@ while [ 1 = 1 ]; do
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
 	faillogfile=$logdir/failures.txt
 
-	targetrelease=`sys/conf/osrelease.sh`	# May change between builds
+	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 
 	qecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	decho "Targets: $targets"
