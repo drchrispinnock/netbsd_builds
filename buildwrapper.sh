@@ -45,7 +45,7 @@ keeplogs=0
 updateflag="-u"
 #otherflags="-P" # Does not work on Darwin
 otherflags=""
-buildx=0	# X Windows
+buildx=1	# X Windows
 withX=""
 
 # Assume we are in the src directory
@@ -70,7 +70,8 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -h  print this message
   -j n  supply n to -j on build.sh
   -l logdir - use alternative log dir
-  -x  attempt to build X as well
+  -x  attempt to build X as well (default)
+  -X  don't build X
   -n  don't upload logs
   -Z  remove state
   -R  restart, attempt to start from state file 
@@ -90,6 +91,7 @@ while [ $# -gt 0 ]; do
         -k)	keeplogs=1; ;;
         -D)	updateflag=""; ;;
         -x)	buildx=1; ;;
+        -X)	buildx=0; ;;
         -Z)	removestate=1; ;;
         -R)	removestate=0; ;;
         -h|--help)              
@@ -107,8 +109,8 @@ statefile="$logdir/statefile"
 xflags=""
 if [ "$buildx" = "1" ]; then
 	if [ ! -d "$sourceroot/xsrc" ]; then
-		echo "Cannot find xsrc!" >&2
-		exit 1
+		echo "Cannot find xsrc - ignoring" >&2
+		buildx="0"
 	fi
 fi
 sleep 5

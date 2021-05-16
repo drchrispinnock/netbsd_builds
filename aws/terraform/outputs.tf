@@ -4,7 +4,7 @@
 #  value       = aws_instance.openbsd.public_dns
 #}
 
-output "dns_name_f" {
+output "dns_name_freebsd_13" {
   description = "Name of the FreeBSD EC2 instance"
-  value       = aws_instance.freebsd.public_dns
+  value       = aws_instance.freebsd-13.public_dns
 }
