@@ -312,10 +312,19 @@ number="0"
 		else
 
 			endtime=`date +%s`
-			duration=`expr $endtime - $starttime`
+			dur_s=`expr $endtime - $starttime`
+
+			dur_m=`expr $dur_s / 60`
+			dur_s=`expr $dur_s % 60`
+
+			dur_h=`expr $dur_m / 60`
+			dur_m=`expr $dur_m % 60`
+
+			duration="$dur_h:$dur_m:$dur_s"
+
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
-			qecho "build$withX completed in $duration seconds$partial"
+			qecho "build$withX completed in $duration$partial"
 			qecho "release$withX started"
 			./build.sh $flags release >> $logfile 2>&1
 			if [ "$?" != "0" ]; then
