@@ -209,7 +209,7 @@ while [ 1 = 1 ]; do
 	mkdir -p $runlogdir
 	whatwedo=""
 
-	(cd $logdir && rm current && ln -sf $runlogdate current)
+	(cd $logdir; rm -f current; ln -sf $runlogdate current)
 
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
 	faillogfile=$logdir/failures.txt
