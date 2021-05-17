@@ -24,7 +24,7 @@ supported="amd64 i386 sparc64 evbppc hpcarm evbarm64-el evbarm64-eb evbmips64-eb
 
 # Tier 2/Organic platforms
 #
-organic="acorn32 algor alpha amiga amigappc arc atari bebox cats cesfic	cobalt	dreamcast epoc32 emips evbsh3-eb evbsh3-el ews4800mips hp300 hppa hpcmips hpcsh ibmnws iyonix landisk luna68k mac68k macppc mipsco mmeye mvme68k mvmeppc netwinder news68k newsmips next68k ofppc pmax prep rs6000 sandpoint sbmips-eb sbmips-el sbmips64-eb sbmips64-el sgimips shark sparc sun2 sun3 vax x68k zaurus"
+organic="acorn32 algor alpha amiga amigappc arc atari bebox cats cesfic	cobalt dreamcast epoc32 emips evbsh3-eb evbsh3-el ews4800mips hp300 hppa hpcmips hpcsh ibmnws iyonix landisk luna68k mac68k macppc mipsco mmeye mvme68k mvmeppc netwinder news68k newsmips next68k ofppc pmax prep rs6000 sandpoint sbmips-eb sbmips-el sbmips64-eb sbmips64-el sgimips shark sparc sun2 sun3 vax x68k zaurus"
 other="ia64 riscv"
 
 # All targets
@@ -32,22 +32,35 @@ alltargets="$supported $organic $other"
 
 # Defaults
 #
+#
+# Default to 1 for now, but it would be great if you could count the CPUs
+# and default to 2*that...
+#
 # Number of CPUs - there must be a better way - shirley shome mishtake?
 # dmesg -t | grep "^cpu. at" | sort | uniq | wc -l
 # grep "^processor" cpuinfo | wc -l
 # jobs should be between 1+n and 2*n where n is the number of the cores/CPUs
 #
-jobs=8
+jobs=1
 
 continuous=1 	# Ad infinitum, ad nauseum
 updatecvs=1
 quiet=0
 keeplogs=0
+
+# Update as default
 updateflag="-u"
-#otherflags="-P" # Does not work on Darwin
-otherflags=""
-buildx=1	# X Windows
+
+# X windows
+buildx=1
 withX=""
+
+if [ "`uname -s`" = "NetBSD" ]; then
+	otherflags="-P" 
+	# does not work well on Darwin, not sure of others!
+else
+	otherflags=""
+fi
 
 # Assume we are in the src directory
 #
@@ -145,22 +158,28 @@ export RELEASEDIR="$sourceroot/releases"
 
 
 decho() {
+	stub=""
+	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +%Y%m%d%H%M`
-	[ "$quiet" != "2" ] && echo "$dt: $1"
-	echo "$dt: $1" >> $masterlogfile
+	[ "$quiet" != "2" ] && echo "$dt: $stub$1"
+	echo "$dt: $stub$1" >> $masterlogfile
 }
 
 qecho() {
+	stub=""
+	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +%Y%m%d%H%M`
-	echo "$dt: $1"
-	echo "$dt: $1" >> $masterlogfile
+	echo "$dt: $stub$1"
+	echo "$dt: $stub$1" >> $masterlogfile
 }
 
 fecho() {
+	stub=""
+	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +%Y%m%d%H%M`
-	printf "$dt: \033[31;1m$1\033[0m\n"
-	echo "$dt: $1" >> $masterlogfile
-	echo "$dt: $1" >> $faillogfile
+	printf "$dt: \033[31;1m$stub$1\033[0m\n"
+	echo "$dt: $stUb$1" >> $masterlogfile
+	echo "$dt: $stub$1" >> $faillogfile
 }
 
 
@@ -188,6 +207,7 @@ while [ 1 = 1 ]; do
 	runlogdate=`date +%Y%m%d%H%M`
 	runlogdir="$logdir/$runlogdate"
 	mkdir -p $runlogdir
+	whatwedo=""
 
 	(cd $logdir && rm current && ln -sf $runlogdate current)
 
@@ -246,8 +266,12 @@ while [ 1 = 1 ]; do
 	# (separated out because the build can work but not the release)
 	#
 
-
+numberoftargets=`echo $targets | wc -w | sed 's/ //'g`
+number="0"
 	for machine in $targets; do
+
+		number=`expr $number + 1`
+		whatwedo="[$number/$numberoftargets] $machine"
 
 		# Should we skip to something
 		#
@@ -273,32 +297,32 @@ while [ 1 = 1 ]; do
 		objdir="../objects/$machine"
 		mkdir -p $objdir
 
-		starttime=`date +%Y%m%d%H%M%S`
-		qecho "$machine build$withX started"
-		decho "$machine logging to $logfile"
-		decho "$machine objects at $objdir"
+		starttime=`date +%s`
+		qecho "build$withX started"
+		decho "logging to $logfile"
+		decho "objects at $objdir"
 		touch $logfile
 		
 		flags="-O $objdir -j $jobs -U $updateflag $xflags $otherflags -m $machine"
 		[ "$quiet" = "0" ] && tail -f $logfile &
 		./build.sh $flags build >> $logfile 2>&1
 		if [ "$?" != "0" ]; then
-			fecho "$machine build$withX FAILED"
+			fecho "build$withX FAILED"
 			failure=1
 		else
 
-			endtime=`date +%Y%m%d%H%M%S`
+			endtime=`date +%s`
 			duration=`expr $endtime - $starttime`
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
-			qecho "$machine build$withX completed in $duration seconds$partial"
-			qecho "$machine release$withX started"
+			qecho "build$withX completed in $duration seconds$partial"
+			qecho "release$withX started"
 			./build.sh $flags release >> $logfile 2>&1
 			if [ "$?" != "0" ]; then
-				fecho "$machine release$withX FAILED"
+				fecho "release$withX FAILED"
 				failure=1
 			else
-				qecho "$machine release$withX completed"
+				qecho "release$withX completed"
 				[ "$keeplogs" = "0" ] && rm -f "$logfile"
 				[ "$keeplogs" = "1" ] && gzip "$logfile"
 			fi
