@@ -242,7 +242,7 @@ while [ 1 = 1 ]; do
 			
 			egrep "^M" "$cvslogfile" 2>&1 >/dev/null
 			if [ "$?" = "0" ]; then
-				decho "Warning - merges detected in source tree"
+				fecho "Warning - merges detected in source tree"
 			fi
 
 			egrep "^(U|P|M)" "$cvslogfile" 2>&1 >/dev/null
