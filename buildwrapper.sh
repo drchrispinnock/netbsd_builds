@@ -157,6 +157,7 @@ export RELEASEDIR="$sourceroot/releases"
 #export MAKEOBJDIRPREFIX=$sourceroot'/obj/${MACHINE}${MACHINE_ARCH:N${MACHINE}:C/(.)/-\1/}'
 
 
+
 decho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
@@ -319,6 +320,9 @@ number="0"
 
 			dur_h=`expr $dur_m / 60`
 			dur_m=`expr $dur_m % 60`
+
+			dur_m=`echo $dur_m | sed -e 's/^.$/0&/'`
+			dur_s=`echo $dur_s | sed -e 's/^.$/0&/'`
 
 			duration="$dur_h:$dur_m:$dur_s"
 
