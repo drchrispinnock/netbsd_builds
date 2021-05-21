@@ -217,6 +217,8 @@ while [ 1 = 1 ]; do
 
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 
+	total_starttime=`date +%s`
+
 	qecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	decho "Targets: $targets"
 	decho "Failures logged to $faillogfile"
@@ -344,7 +346,19 @@ number="0"
 		rm -f $statefile
 		previous=0
 	done
-	qecho "Build completed ==="
+	total_endtime=`date +%s`
+	total_dur_s=`expr $total_endtime - $total_starttime`
+
+	total_dur_m=`expr $total_dur_s / 60`
+	total_dur_s=`expr $total_dur_s % 60`
+
+	total_dur_h=`expr $total_dur_m / 60`
+	total_dur_m=`expr $total_dur_m % 60`
+
+	total_dur_m=`echo $total_dur_m | sed -e 's/^.$/0&/'`
+	total_dur_s=`echo $total_dur_s | sed -e 's/^.$/0&/'`
+
+	qecho "Build completed === ($dur_h:$dur_m:$dur_s)"
 
 	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
 		qecho "Uploading results to $uploadurl"
