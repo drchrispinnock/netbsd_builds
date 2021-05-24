@@ -376,7 +376,7 @@ number="0"
 	total_dur_m=`echo $total_dur_m | sed -e 's/^.$/0&/'`
 	total_dur_s=`echo $total_dur_s | sed -e 's/^.$/0&/'`
 
-	iecho "Build completed === ($dur_h:$dur_m:$dur_s)"
+	iecho "Build completed === ($total_dur_h:$total_dur_m:$total_dur_s)"
 
 	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
 		qecho "Uploading results to $uploadurl"
