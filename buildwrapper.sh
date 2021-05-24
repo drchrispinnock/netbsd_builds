@@ -161,11 +161,15 @@ export RELEASEDIR="$sourceroot/releases"
 date_format="%Y%m%d%H%M"
 date_format="%d/%m/%Y %H:%M"
 
+del() {
+	printf "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+}
+
 decho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
-	[ "$quiet" != "2" ] && printf "\r$dt $stub$1"
+	[ "$quiet" != "2" ] && del && printf "\r$dt $stub$1"
 	echo "$dt: $stub$1" >> $masterlogfile
 }
 
@@ -173,6 +177,7 @@ qecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
+	del
 	printf "\r$dt $stub$1"
 	echo "$dt $stub$1" >> $masterlogfile
 }
@@ -181,6 +186,7 @@ iecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
+	del
 	printf "\r$dt $stub$1\n"
 	echo "$dt $stub$1" >> $masterlogfile
 }
@@ -189,6 +195,7 @@ fecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
+	del
 	printf "\r$dt \033[31;1m$stub$1\033[0m\n"
 	echo "$dt $stUb$1" >> $masterlogfile
 	echo "$dt $stub$1" >> $faillogfile
