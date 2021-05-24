@@ -146,6 +146,7 @@ other="sparc acorn32 cats cobalt dreamcast sun2 sun3 macppc"
 # Override
 if [ $# -gt 0 ]; then
 	targets="$*"
+	removestate=1
 fi
 
 # Put the releases in one place
@@ -157,30 +158,40 @@ export RELEASEDIR="$sourceroot/releases"
 #export MAKEOBJDIRPREFIX=$sourceroot'/obj/${MACHINE}${MACHINE_ARCH:N${MACHINE}:C/(.)/-\1/}'
 
 
+date_format="%Y%m%d%H%M"
+date_format="%d/%m/%Y %H:%M"
 
 decho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
-	dt=`date +%Y%m%d%H%M`
-	[ "$quiet" != "2" ] && echo "$dt: $stub$1"
+	dt=`date +"$date_format"`
+	[ "$quiet" != "2" ] && printf "\r$dt $stub$1"
 	echo "$dt: $stub$1" >> $masterlogfile
 }
 
 qecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
-	dt=`date +%Y%m%d%H%M`
-	echo "$dt: $stub$1"
-	echo "$dt: $stub$1" >> $masterlogfile
+	dt=`date +"$date_format"`
+	printf "\r$dt $stub$1"
+	echo "$dt $stub$1" >> $masterlogfile
+}
+
+iecho() {
+	stub=""
+	[ "$whatwedo" != "" ] && stub="$whatwedo "
+	dt=`date +"$date_format"`
+	printf "\r$dt $stub$1\n"
+	echo "$dt $stub$1" >> $masterlogfile
 }
 
 fecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
-	dt=`date +%Y%m%d%H%M`
-	printf "$dt: \033[31;1m$stub$1\033[0m\n"
-	echo "$dt: $stUb$1" >> $masterlogfile
-	echo "$dt: $stub$1" >> $faillogfile
+	dt=`date +"$date_format"`
+	printf "\r$dt \033[31;1m$stub$1\033[0m\n"
+	echo "$dt $stUb$1" >> $masterlogfile
+	echo "$dt $stub$1" >> $faillogfile
 }
 
 
@@ -219,12 +230,12 @@ while [ 1 = 1 ]; do
 
 	total_starttime=`date +%s`
 
-	qecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
-	decho "Targets: $targets"
-	decho "Failures logged to $faillogfile"
+	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
+	iecho "Targets: $targets"
+	iecho "Failures logged to $faillogfile"
 
 	if [ "$previous" = "1" ]; then
-		qecho "Detected state. Attempting to start from $state"
+		iecho "Detected state. Attempting to start from $state"
 	else
 	
 		# Update from CVS
@@ -330,7 +341,7 @@ number="0"
 
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
-			qecho "build$withX completed in $duration$partial"
+			iecho "build$withX completed in $duration$partial"
 			qecho "release$withX started"
 			./build.sh $flags release >> $logfile 2>&1
 			if [ "$?" != "0" ]; then
@@ -358,7 +369,7 @@ number="0"
 	total_dur_m=`echo $total_dur_m | sed -e 's/^.$/0&/'`
 	total_dur_s=`echo $total_dur_s | sed -e 's/^.$/0&/'`
 
-	qecho "Build completed === ($dur_h:$dur_m:$dur_s)"
+	iecho "Build completed === ($dur_h:$dur_m:$dur_s)"
 
 	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
 		qecho "Uploading results to $uploadurl"
