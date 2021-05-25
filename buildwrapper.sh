@@ -224,7 +224,7 @@ fecho() {
 	dt=`date +"$date_format"`
 	del
 	printf "\r$dt \033[31;1m$stub$1\033[0m\n"
-	echo "$dt $stUb$1" >> $masterlogfile
+	echo "$dt $stub$1" >> $masterlogfile
 	echo "$dt $stub$1" >> $faillogfile
 }
 
@@ -265,6 +265,7 @@ while [ 1 = 1 ]; do
 	total_starttime=`date +%s`
 
 	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
+	iecho "My PID: $$"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
