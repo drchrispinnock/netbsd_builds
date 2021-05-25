@@ -17,8 +17,9 @@ variable "freebsd-13-ami" {
   default     = "ami-0c799aeda60f4e2c4"
 }
 
-#variable "freebsd-12-ami" {
-#  description = "AMI string of FreeBSD 12 (x86) in eu-west-2"
-#  type        = string
-#  default     = "ami-0008f3d6d4c41d1f1"
-#}
+variable "debian-10-ami" {
+  description = "AMI string of Debian in eu-west-2"
+  type        = string
+  default     = "ami-050949f5d3aede071"
+}
+
