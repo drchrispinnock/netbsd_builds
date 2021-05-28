@@ -52,7 +52,7 @@ alltargets="$supported $organic $evbarm $other"
 # Default to 1 for now, but it would be great if you could count the CPUs
 # and default to 2*that...
 #
-# Number of CPUs - there must be a better way - shirley shome mishtake?
+# Number of CPUs
 # dmesg -t | grep "^cpu. at" | sort | uniq | wc -l
 # grep "^processor" cpuinfo | wc -l
 # jobs should be between 1+n and 2*n where n is the number of the cores/CPUs
@@ -76,17 +76,12 @@ keeplogs=0
 updateflag="-u"
 
 # Build X windows if the sources are available
-#
 buildx=1
 withX=""
 
-if [ "`uname -s`" = "NetBSD" ]; then
-	# Predicatable binaries
-	otherflags="-P" 
-else
-	# does not work well on Darwin, not sure of others!
-	otherflags=""
-fi
+# Christos fixed -P by toolifying date 26/5/2021
+#
+otherflags="-P" 
 
 # Assume we are in the src directory
 #
