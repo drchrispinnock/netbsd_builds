@@ -35,11 +35,10 @@ alltargets="$supported $organic $evbarm $other"
 
 # Defaults
 #
-#
 # Default to 1 for now, but it would be great if you could count the CPUs
 # and default to 2*that...
 #
-# Number of CPUs - there must be a better way - shirley shome mishtake?
+# Number of CPUs
 # dmesg -t | grep "^cpu. at" | sort | uniq | wc -l
 # grep "^processor" cpuinfo | wc -l
 # jobs should be between 1+n and 2*n where n is the number of the cores/CPUs
@@ -54,16 +53,13 @@ keeplogs=0
 # Update as default
 updateflag="-u"
 
-# X windows
+# X windows - try to build
 buildx=1
 withX=""
 
-if [ "`uname -s`" = "NetBSD" ]; then
-	otherflags="-P" 
-	# does not work well on Darwin, not sure of others!
-else
-	otherflags=""
-fi
+# Christos fixed -P by toolifying date 26/5/2021
+#
+otherflags="-P" 
 
 # Assume we are in the src directory
 #
@@ -379,7 +375,7 @@ number="0"
 	total_dur_m=`echo $total_dur_m | sed -e 's/^.$/0&/'`
 	total_dur_s=`echo $total_dur_s | sed -e 's/^.$/0&/'`
 
-	iecho "Build completed === ($dur_h:$dur_m:$dur_s)"
+	iecho "Build completed === ($total_dur_h:$total_dur_m:$total_dur_s)"
 
 	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
 		qecho "Uploading results to $uploadurl"
