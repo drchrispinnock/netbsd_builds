@@ -5,13 +5,24 @@
 # Platforms - loads of defaults ##########################################
 #
 
-# My preferences
+# My preferred targets
 #
 mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
 targets="$mypref" # Default
+
+# Upload logs to somewhere... off by default
+#
 uploadurl="www.netbsd.org:public_html"
 uploadr=0
+
+# Don't remove the state (default) - the state allows the script
+# to pick up from where it left off, sort of.
+#
 removestate=0
+
+# Sleep between cycles when there is nothing to do
+# due to no CVS updates
+#
 sleepbetween=18000	# 5 hours
 
 # Tier 1 platforms (subset)
@@ -26,14 +37,17 @@ evbarm="evbarmv5-el evbarmv5hf-el evbarmv5-eb evbarmv5hf-eb evbarmv6-el evbarmv6
 
 # Tier 2/Organic platforms
 #
-organic="acorn32 algor alpha amiga amigappc arc atari bebox cats cesfic cobalt dreamcast epoc32 emips evbsh3-eb evbsh3-el ews4800mips hp300 hppa hpcmips hpcsh ibmnws iyonix landisk luna68k mac68k macppc macppc64 mipsco mmeye mvme68k mvmeppc netwinder news68k newsmips next68k ofppc pmax prep rs6000 sandpoint sbmips-eb sbmips-el sbmips64-eb sbmips64-el sgimips shark sparc sun2 sun3 vax x68k zaurus"
+organic="acorn32 algor alpha amiga amigappc arc atari bebox cats cesfic cobalt dreamcast epoc32 emips evbsh3-eb evbsh3-el ews4800mips hp300 hppa hpcmips hpcsh ibmnws iyonix landisk luna68k mac68k macppc mipsco mmeye mvme68k mvmeppc netwinder news68k newsmips next68k ofppc pmax prep rs6000 sandpoint sbmips-eb sbmips-el sbmips64-eb sbmips64-el sgimips shark sparc sun2 sun3 vax x68k zaurus"
 
-other="ia64 riscv"
+# Others
+#
+other="macppc64 ia64 riscv"
 
 # All targets
+#
 alltargets="$supported $organic $evbarm $other"
 
-# Defaults
+# Jobs
 #
 # Default to 1 for now, but it would be great if you could count the CPUs
 # and default to 2*that...
@@ -45,15 +59,23 @@ alltargets="$supported $organic $evbarm $other"
 #
 jobs=1
 
-continuous=1 	# Ad infinitum, ad nauseum
+# By default, keep going ad infinitum, ad nauseum
+continuous=1 	
+
+# Update sources before starting
 updatecvs=1
+
+# Suppress output
 quiet=0
+
+# Keep logs even if success (lots of disc space)
 keeplogs=0
 
-# Update as default
+# pass -u to build.sh to save loads of time
+#
 updateflag="-u"
 
-# X windows - try to build
+# Build X windows if the sources are available
 buildx=1
 withX=""
 
@@ -99,12 +121,23 @@ while [ $# -gt 0 ]; do
         -l)	logdir="$2"; shift; ;;
         -c)	updatecvs=0; continuous=0; ;;
         -n)	uploadr=0; ;;
+
+# Logging options
+#
         -q)	quiet=1; ;;
         -Q)	quiet=2; ;;
         -k)	keeplogs=1; ;;
+
+# Don't pass -u
+#
         -D)	updateflag=""; ;;
+# To build X or not
+#
         -x)	buildx=1; ;;
         -X)	buildx=0; ;;
+
+# To preserve state from the last run or not
+#
         -Z)	removestate=1; ;;
         -R)	removestate=0; ;;
         -h|--help)              
@@ -116,9 +149,11 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
+# Make the log directory
 mkdir -p "$logdir"
 statefile="$logdir/statefile"
 
+# Check for x sources
 xflags=""
 if [ "$buildx" = "1" ]; then
 	if [ ! -d "$sourceroot/xsrc" ]; then
@@ -126,23 +161,9 @@ if [ "$buildx" = "1" ]; then
 		buildx="0"
 	fi
 fi
-# Tier 1 platforms
+
+# Override targets from the CLI (overrides -A)
 #
-#supported="amd64 i386 sparc64 evbppc hpcarm evbarm64-el evbarm64-eb evbmips64-eb evbmips64-el evbmips-eb evbmips-el"
-supported="amd64 i386 sparc64 evbppc evbarm64-el evbarm64-eb"
-
-# EVBArm combinations
-#evbarmv4-el evbarmv4-eb evbarmv5-el evbarmv5hf-el evbarmv5-eb evbarmv5hf-eb evbarmv6-el evbarmv6hf-el evbarmv6-eb evbarmv6hf-eb evbarmv7-el evbarmv7-eb evbarmv7hf-el evbarmv7hf-eb evbarm64-el evbarm64-eb
-
-# EVBMips combinations
-#evbmips64-eb evbmips64-el evbmips-eb evbmips-el
-
-# Others
-#
-other="sparc acorn32 cats cobalt dreamcast sun2 sun3 macppc"
-#other=""
-
-# Override
 if [ $# -gt 0 ]; then
 	targets="$*"
 	removestate=1
@@ -152,14 +173,11 @@ fi
 #
 export RELEASEDIR="$sourceroot/releases"
 
-# Seperate out all objects
-#
-#export MAKEOBJDIRPREFIX=$sourceroot'/obj/${MACHINE}${MACHINE_ARCH:N${MACHINE}:C/(.)/-\1/}'
-
-
-date_format="%Y%m%d%H%M"
+# Logging date format
+#date_format="%Y%m%d%H%M"
 date_format="%d/%m/%Y %H:%M"
 
+# Clear a line
 del() {
 	printf "\r                                                                             ";
 }
@@ -172,6 +190,8 @@ decho() {
 	echo "$dt: $stub$1" >> $masterlogfile
 }
 
+# Even if quiet
+#
 qecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
@@ -181,6 +201,8 @@ qecho() {
 	echo "$dt $stub$1" >> $masterlogfile
 }
 
+# Informational
+#
 iecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
@@ -190,13 +212,14 @@ iecho() {
 	echo "$dt $stub$1" >> $masterlogfile
 }
 
+# Fail - print in red
 fecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
 	del
 	printf "\r$dt \033[31;1m$stub$1\033[0m\n"
-	echo "$dt $stUb$1" >> $masterlogfile
+	echo "$dt $stub$1" >> $masterlogfile
 	echo "$dt $stub$1" >> $faillogfile
 }
 
@@ -204,7 +227,8 @@ fecho() {
 # Here we go
 #
 
-
+# Deal with state
+#
 previous=0
 state=""
 if [ "$removestate" = "1" ]; then
@@ -217,7 +241,6 @@ if [ -f "$statefile" ]; then
 fi
 
 failure=0
-
 firstrun=1
 
 while [ 1 = 1 ]; do
@@ -237,6 +260,7 @@ while [ 1 = 1 ]; do
 	total_starttime=`date +%s`
 
 	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
+	iecho "My PID: $$"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
