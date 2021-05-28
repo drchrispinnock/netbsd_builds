@@ -37,6 +37,16 @@ resource "aws_instance" "freebsd-13" {
   tags = {
     Name = "FreeBSD 13 Build Server"
   }
+#  provisioner "file" {
+#	  source = "setup_netbsd.sh"
+#	  destination = "/tmp/setup_netbsd.sh"
+#  }
+#  provisioner "remote-exec" {
+#	  inline = [
+#	  	"sh /tmp/setup_netbsd.sh",
+#	]
+#  }
+
 }
 
 resource "aws_instance" "debian-10" {
