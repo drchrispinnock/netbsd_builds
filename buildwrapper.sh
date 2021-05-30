@@ -73,6 +73,10 @@ keeplogs=0
 #
 updateflag="-u"
 
+# make target (build or release, etc)
+#
+make_target=build
+
 # Build X windows if the sources are available
 buildx=1
 withX=""
@@ -92,7 +96,7 @@ sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
-		[-n] [-Z] [-R} [targets]
+		[ -t build|release] [-n] [-Z] [-R} [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS on first build run
@@ -106,6 +110,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -x  attempt to build X as well (default)
   -X  don't build X
   -n  don't upload logs
+  -t  make target (e.g. build, release - default is build)
   -Z  remove state
   -R  restart, attempt to start from state file 
   targets given on the command line override -A and defaults
@@ -119,6 +124,7 @@ while [ $# -gt 0 ]; do
         -l)	logdir="$2"; shift; ;;
         -c)	updatecvs=0; ;;
         -n)	uploadr=0; ;;
+        -t)	make_target="$2"; shift; ;;
 
 # Logging options
 #
@@ -347,9 +353,9 @@ number="0"
 		
 		flags="-O $objdir -j $jobs -U $updateflag $xflags $otherflags -m $machine"
 		[ "$quiet" = "0" ] && tail -f $logfile &
-		./build.sh $flags build >> $logfile 2>&1
+		./build.sh $flags $make_target >> $logfile 2>&1
 		if [ "$?" != "0" ]; then
-			fecho "build$withX FAILED"
+			fecho "$make_target$withX FAILED"
 			failure=1
 		else
 
@@ -370,16 +376,8 @@ number="0"
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
 			iecho "build$withX completed in $duration$partial"
-			qecho "release$withX started"
-			./build.sh $flags release >> $logfile 2>&1
-			if [ "$?" != "0" ]; then
-				fecho "release$withX FAILED"
-				failure=1
-			else
-				qecho "release$withX completed"
-				[ "$keeplogs" = "0" ] && rm -f "$logfile"
-				[ "$keeplogs" = "1" ] && gzip "$logfile"
-			fi
+			[ "$keeplogs" = "0" ] && rm -f "$logfile"
+			[ "$keeplogs" = "1" ] && gzip "$logfile"
 		fi
 
 		rm -f $statefile
