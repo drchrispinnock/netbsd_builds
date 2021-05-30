@@ -97,7 +97,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
 		[-n] [-Z] [-R} [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
-  -c  don't update CVS, implies -1 (no point in repeating otherwise)
+  -c  don't update CVS on first build run
   -q  quiet mode
   -Q  very quiet mode
   -k  keep successful logs
@@ -119,7 +119,7 @@ while [ $# -gt 0 ]; do
         -1)	continuous=0; ;;
         -j)	jobs="$2"; shift; ;;
         -l)	logdir="$2"; shift; ;;
-        -c)	updatecvs=0; continuous=0; ;;
+        -c)	updatecvs=0; ;;
         -n)	uploadr=0; ;;
 
 # Logging options
@@ -304,7 +304,7 @@ while [ 1 = 1 ]; do
 			fi
 
 		fi
-
+		updatecvs=1 # Update next time otherwise little point
 	fi
 	# Build each machine, then build the release
 	# (separated out because the build can work but not the release)
