@@ -27,13 +27,11 @@ sleepbetween=18000	# 5 hours
 
 # Tier 1 platforms (subset)
 #
-supported="amd64 i386 sparc64 evbppc hpcarm evbarm64-el evbarm64-eb evbmips64-eb evbmips64-el evbmips-eb evbmips-el"
+supported="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbmips64-el evbmips-eb evbmips-el"
 
-# All EVBArm combinations
+# Tier 1 - All EVBArm combinations
 #
-#evbarm="evbarmv4-el evbarmv4-eb evbarmv5-el evbarmv5hf-el evbarmv5-eb evbarmv5hf-eb evbarmv6-el evbarmv6hf-el evbarmv6-eb evbarmv6hf-eb evbarmv7-el evbarmv7-eb evbarmv7hf-el evbarmv7hf-eb evbarm64-el evbarm64-eb"
-
-evbarm="evbarmv5-el evbarmv5hf-el evbarmv5-eb evbarmv5hf-eb evbarmv6-el evbarmv6hf-el evbarmv6-eb evbarmv6hf-eb evbarmv7-el evbarmv7-eb evbarmv7hf-el evbarmv7hf-eb evbarm64-el evbarm64-eb"
+evbarm="evbarmv4-el evbarmv4-eb evbarmv5-el evbarmv5hf-el evbarmv5-eb evbarmv5hf-eb evbarmv6-el evbarmv6hf-el evbarmv6-eb evbarmv6hf-eb evbarmv7-el evbarmv7-eb evbarmv7hf-el evbarmv7hf-eb evbarm64-el evbarm64-eb"
 
 # Tier 2/Organic platforms
 #
@@ -45,7 +43,7 @@ other="macppc64 ia64 riscv"
 
 # All targets
 #
-alltargets="$supported $organic $evbarm $other"
+alltargets="$supported $evbarm $organic $other"
 
 # Jobs
 #
