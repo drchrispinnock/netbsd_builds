@@ -308,7 +308,6 @@ while [ 1 = 1 ]; do
 			fi
 
 		fi
-		updatecvs=1 # Update next time otherwise little point
 	fi
 	# Build each machine, then build the release
 	# (separated out because the build can work but not the release)
@@ -404,4 +403,5 @@ number="0"
 	echo ""
 	failure=0
 	[ "$continuous" != "1" ] && exit 0;
+	updatecvs=1 # Update CVS next time regardless
 done
