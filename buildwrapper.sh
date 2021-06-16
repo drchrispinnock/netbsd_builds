@@ -69,9 +69,13 @@ quiet=0
 # Keep logs even if success (lots of disc space)
 keeplogs=0
 
-# pass -u to build.sh to save loads of time
+# pass -u to build.sh to not clean everything
 #
 updateflag="-u"
+
+# Retry on fail
+#
+retryonfail=0
 
 # make target (build or release, etc)
 #
@@ -96,7 +100,7 @@ sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
-		[ -t build|release] [-n] [-Z] [-R} [targets]
+		[ -t build|release] [-n] [-Z] [-R] [-r] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS on first build run
@@ -113,6 +117,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -t  make target (e.g. build, release - default is build)
   -Z  remove state
   -R  restart, attempt to start from state file 
+  -r  retry build with empty object directory if failure
   targets given on the command line override -A and defaults
 "
 
@@ -144,6 +149,9 @@ while [ $# -gt 0 ]; do
 #
         -Z)	removestate=1; ;;
         -R)	removestate=0; ;;
+
+# Retry the build with an empty object directory
+        -r)	retryonfail=1; ;;
         -h|--help)              
                                 echo "$USAGE"; exit ;;
         -*)             echo "${0##*/}: unknown option \"$1\"" 1>&2
@@ -356,6 +364,19 @@ number="0"
 		if [ "$?" != "0" ]; then
 			fecho "$make_target$withX FAILED"
 			failure=1
+			if [ "$retryonfail" = "1" ]; then
+				failure=0
+				decho "Cleaning objects for $machine"
+				qecho "build$withX restarted from scratch"
+				rm -rf "$objdir"
+				flags="-O $objdir -j $jobs -U $xflags $otherflags -m $machine"
+				./build.sh $flags $make_target >> $logfile 2>&1
+				if [ "$?" != "0" ]; then
+					fecho "$make_target$withX FAILED FROM CLEAN"
+					failure=1
+				fi
+			fi
+
 		else
 
 			endtime=`date +%s`
