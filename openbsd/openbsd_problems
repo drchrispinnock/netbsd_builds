@@ -84,3 +84,12 @@ Quoted: and %s does not %s
 
 On every other platform I've seen and pdksh, the first two results are
 returned as 4.
+
+4. memory exhaustion
+During the build of LLVM on amd64 and i386, my 8G machine doesn't have
+enough virtual memory.
+
+5. macppc-fixcoff
+When cross-building to macppc, this tool doesn't build.
+
+
