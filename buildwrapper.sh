@@ -328,6 +328,8 @@ number="0"
 		number=`expr $number + 1`
 		whatwedo="[$number/$numberoftargets] $machine"
 
+		failure=0
+
 		# Should we skip to something
 		#
 		if [ "$state" != "" ]; then
@@ -338,14 +340,14 @@ number="0"
 		echo "$machine" > $statefile
 
 		if [ "$buildx" = "1" ]; then
-#			if [ "$machine" = "sun2" ]; then
-#				qecho "X known broken on $machine - skipping X"
-#				xflags=""
-#				withX=""
-#			else
-			xflags="-x -X $sourceroot/xsrc"
-			withX=" with X"
-#			fi
+			if [ "$machine" = "sun2" ]; then
+				qecho "X known broken on $machine - skipping X"
+				xflags=""
+				withX=""
+			else
+				xflags="-x -X $sourceroot/xsrc"
+				withX=" with X"
+			fi
 		fi
 		logfile="$runlogdir/`date +%Y%m%d%H%M`-$machine"".txt"
 
@@ -377,7 +379,9 @@ number="0"
 				fi
 			fi
 
-		else
+		fi
+
+		if [ "$failure" != "1" ]; then
 
 			endtime=`date +%s`
 			dur_s=`expr $endtime - $starttime`
@@ -415,6 +419,7 @@ number="0"
 	total_dur_m=`echo $total_dur_m | sed -e 's/^.$/0&/'`
 	total_dur_s=`echo $total_dur_s | sed -e 's/^.$/0&/'`
 
+	whatwedo=""
 	iecho "Build completed === ($total_dur_h:$total_dur_m:$total_dur_s)"
 
 	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
