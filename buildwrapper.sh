@@ -284,7 +284,7 @@ while [ 1 = 1 ]; do
 			HOST_SH=/usr/local/bin/bash
 			export HOST_SH
 		else
-			fecho "Warning - /usr/local/bin/bash available - sysinst build broken on OpenBSD"
+			fecho "Warning - /usr/local/bin/bash not found - sysinst build broken on OpenBSD"
 						
 		fi
 	fi
