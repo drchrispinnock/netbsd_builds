@@ -267,7 +267,6 @@ while [ 1 = 1 ]; do
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
 	faillogfile=$logdir/failures.txt
 
-	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 
 	total_starttime=`date +%s`
 
@@ -275,6 +274,7 @@ while [ 1 = 1 ]; do
 #	iecho "My PID: $$"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
+
 
 	if [ "$previous" = "1" ]; then
 		iecho "Detected state. Attempting to start from $state"
@@ -317,13 +317,15 @@ while [ 1 = 1 ]; do
 
 		fi
 	fi
+	
+	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	# Build each machine, then build the release
 	# (separated out because the build can work but not the release)
 	#
 
-numberoftargets=`echo $targets | wc -w | sed 's/ //'g`
-number="0"
+	numberoftargets=`echo $targets | wc -w | sed 's/ //'g`
+	number="0"
 	for machine in $targets; do
 
 		number=`expr $number + 1`
