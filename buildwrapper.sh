@@ -271,8 +271,8 @@ while [ 1 = 1 ]; do
 
 	total_starttime=`date +%s`
 
-	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
-	iecho "My PID: $$"
+	iecho "Starting build"
+#	iecho "My PID: $$"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
@@ -317,6 +317,7 @@ while [ 1 = 1 ]; do
 
 		fi
 	fi
+	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
 	# Build each machine, then build the release
 	# (separated out because the build can work but not the release)
 	#
