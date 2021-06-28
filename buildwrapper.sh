@@ -275,6 +275,20 @@ while [ 1 = 1 ]; do
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
+	# OS quirks
+	#
+	if [ `uname -s` = "OpenBSD" ]; then
+
+		if [ -f /usr/local/bin/bash ]; then
+			iecho "Using bash for OpenBSD to avoid sysinst build failure"
+			HOST_SH=/usr/local/bin/bash
+			export HOST_SH
+		else
+			fecho "Warning - /usr/local/bin/bash available - sysinst build broken on OpenBSD"
+						
+		fi
+	fi
+
 
 	if [ "$previous" = "1" ]; then
 		iecho "Detected state. Attempting to start from $state"
