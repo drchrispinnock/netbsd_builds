@@ -1,99 +1,35 @@
-There are three distinct problems building NetBSD sources on OpenBSD.
+There are problems building NetBSD sources on OpenBSD.
 I've tested this on two different OpenBSD 6.9 machines.
 
-1. nbmakeinfo seg faults on building gccint.texi - FIXED
-(fixed in NetBSD/current 7th June, an out of bounds access that was
-only tickled when building in OpenBSD)
-
-2. liblto_plugin is installed in the tools with a major & minor number 0.
-The toolchain expects it without a major and minor number. I believe this
-is simply the way that OpenBSD handles shared objects. It's not clear
-to me here what the best approach is: a) flags to linker; b) flags to
-installer; c) symbolic link hack. It looks like this is the only
-shared object in our build toolchain.
-
-As a workaround I copied the file and was able to progress:
-
-cjep@blowfish% pwd
-/home/cjep/src/NetBSD/obj/amd64-x86_64/home/cjep/usr/src/tooldir.OpenBSD-6.9-amd64/libexec/gcc/x86_64--netbsd/10.3.0
-cjep@blowfish% ls -la liblto_plugin.so
--rwxr-xr-x  1 cjep  cjep  113112 May 13 22:05 liblto_plugin.so.0.0
-
--rwxr-xr-x  1 cjep  cjep  113112 May 13 22:05 liblto_plugin.so
-
-
-Then:
-
-3. sysinst will not build due to the check for formatting in one of the 
-German messages files. This looks like a bug/feature/characteristic of the 
-OpenBSD sh running msg_xlat.sh in the count logic.  I was able to get 
-past this by using bash as HOST_SH (which of course is not native 
-to the build, but on Open sh == ksh leaving little other options).
-
-msg_xlat.sh: ERROR Wrong number of format specifiers in "openfail", got 5, expected 4
-*** Failed target:  sysinstmsgs.de
-*** Failed command: /home/cjep/usr/src/obj/tooldir.OpenBSD-6.9-amd64/bin/nbsed "s/@@VERSION@@/9.99.82/" /home/cjep/usr/src/usr.sbin/sysinst/arch/amd64/.    ./../msg.mi.de /home/cjep/usr/src/usr.sbin/sysinst/arch/amd64/../i386/msg.md    .de /home/cjep/usr/src/usr.sbin/sysinst/arch/amd64/../../msg.mbr.de /home/cj    ep/usr/src/usr.sbin/sysinst/arch/amd64/../../msg.pm.de | /home/cjep/usr/src/    obj/tooldir.OpenBSD-6.9-amd64/bin/nbsed "s/@@MACHINE@@/amd64/" | /home/cjep/    usr/src/obj/tooldir.OpenBSD-6.9-amd64/bin/nbawk -f /home/cjep/usr/src/usr.sb    in/sysinst/arch/amd64/../../unif.awk -v defines="BOOTSEL AOUT2ELF HAVE_INSTA    LL_IMAGE" | /bin/sh /home/cjep/usr/src/usr.sbin/sysinst/arch/amd64/../../msg    _xlat.sh -f sysinstmsgs.fmtcnt > sysinstmsgs.de
-
-This seems to be a peculiarity of the shell. This test script shows
-the discrepancy:
-
-# The actual message causing the problem
-#
-msg="%s konnte nicht ge\xf6ffnet werden, die Fehlermeldung lautet: %s."
-msg1="%s causes a problem for some %s"
-msg2="and %s does not %s"
-
-IFS="%"
-set -- - x$msg
-echo "Message: $msg" >&2
-echo "$#" >&2
-
-set -- - x$msg1
-echo "Message: $msg1" >&2
-echo "$#" >&2
-
-set -- - x$msg2
-echo "Message: $msg2" >&2
-echo "$#" >&2
-
-set -- - "x$msg"
-echo "Quoted: $msg" >&2
-echo "$#" >&2
-
-set -- - "x$msg1"
-echo "Quoted: $msg1" >&2
-echo "$#" >&2
-
-set -- - "x$msg2"
-echo "Quoted: $msg2" >&2
-echo "$#" >&2
-
-On OpenBSD:
-Message: %s konnte nicht ge\xf6ffnet werden, die Fehlermeldung lautet: %s.
-5
-Message: %s causes a problem for some %s
-5
-Message: and %s does not %s
-4
-Quoted: %s konnte nicht ge\xf6ffnet werden, die Fehlermeldung lautet: %s.
-2
-Quoted: %s causes a problem for some %s
-2
-Quoted: and %s does not %s
-2
-
-On every other platform I've seen and pdksh, the first two results are
-returned as 4.
-
-4. memory exhaustion building librt
+Still open
+----------
+* Memory exhaustion building librt (amd64 & i386 X won't build)
 During the build of LLVM librt on amd64 and i386, my 8G machine 
 doesn't have enough virtual memory. This occurs when building xsrc
-because the library is needed on some platforms
+because the library is a prerequisite.
 
-5. macppc-fixcoff - FIXED.
+*. gcc failures on MIPS platforms
+Gcc will not cross-build on the MIPS architectures.
+
+Fixed
+-----
+
+1. PR#56179 - nbmakeinfo seg faults on building gccint.texi - FIXED 20210607
+Turned out to be an out of bounds access that was only tickled when 
+building in OpenBSD. Patch found in OpenBSD makeinfo & mainline.
+
+2. PR#56180 - liblto_plugin is installed in the tools with a major & 
+minor number 0. The toolchain expects it without a major and minor number. 
+I believe this is simply the way that OpenBSD handles shared objects
+- FIXED 20210628 (and 20210629 for gcc.old)
+
+3. PR#56181 - sysinst will not build due to the check for formatting in 
+one of the German messages files. This looks like a bug/feature/
+characteristic of the OpenBSD sh running msg_xlat.sh in the count logic. 
+I was able to get past this by using bash as HOST_SH - FIXED 20210629
+
+4. macppc-fixcoff won't build - FIXED 20210623
 When cross-building to macppc, this tool doesn't build due to repeated
 definitions. By including the tool headers properly, this one is avoided.
 
-6. gcc failures on MIPS platforms
-Gcc will not cross build on the MIPS architectures.
 
