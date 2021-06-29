@@ -275,21 +275,6 @@ while [ 1 = 1 ]; do
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
-	# OS quirks
-	#
-	if [ `uname -s` = "OpenBSD" ]; then
-
-		if [ -f /usr/local/bin/bash ]; then
-			iecho "Using bash for OpenBSD to avoid sysinst build failure"
-			HOST_SH=/usr/local/bin/bash
-			export HOST_SH
-		else
-			fecho "Warning - /usr/local/bin/bash not found - sysinst build broken on OpenBSD"
-						
-		fi
-	fi
-
-
 	if [ "$previous" = "1" ]; then
 		iecho "Detected state. Attempting to start from $state"
 	else
@@ -386,7 +371,7 @@ while [ 1 = 1 ]; do
 			if [ "$retryonfail" = "1" ]; then
 				failure=0
 				decho "Cleaning objects for $machine"
-				qecho "build$withX restarted from scratch"
+				qecho "$make_target$withX restarted from scratch"
 				rm -rf "$objdir"
 				flags="-O $objdir -j $jobs -U $xflags $otherflags -m $machine"
 				./build.sh $flags $make_target >> $logfile 2>&1
@@ -416,7 +401,7 @@ while [ 1 = 1 ]; do
 
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
-			iecho "build$withX completed in $duration$partial"
+			iecho "$make_target$withX completed in $duration$partial"
 			[ "$keeplogs" = "0" ] && rm -f "$logfile"
 			[ "$keeplogs" = "1" ] && gzip "$logfile"
 		fi
