@@ -1,0 +1,12 @@
+There are problems building NetBSD sources on FreeBSD.
+I've tested this on two different FreeBSD 13.0
+
+What is broken:
+
+tools	 		
+build without X:	
+build with X:		amd64, i386
+
+Still open
+----------
+*
