@@ -357,7 +357,7 @@ while [ 1 = 1 ]; do
 		mkdir -p $objdir
 
 		starttime=`date +%s`
-		qecho "build$withX started"
+		qecho "$make_target$withX started"
 		decho "logging to $logfile"
 		decho "objects at $objdir"
 		touch $logfile
