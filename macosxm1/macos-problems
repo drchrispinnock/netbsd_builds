@@ -1,0 +1,15 @@
+
+1. gmp library does not build in tools:
+
+checking size of unsigned long... 8
+checking size of mp_limb_t... 8
+configure: error: Oops, mp_limb_t is 64 bits, but the assembler code
+in this configuration expects 32 bits.
+
+*** Failed target: .configure_done
+*** Failed commands:
+	@mkdir build 2>/dev/null || true
+	@(cd build && ${CONFIGURE_ENV} ${HOST_SH} ${GNUHOSTDIST}/configure ${CONFIGURE_ARGS})
+	@echo ${BUILD_PLATFORM} > $@
+*** [.configure_done] Error code 1
+
