@@ -1,12 +1,13 @@
-12/5/2021	
+1/7/2021	
 
 y - ./build.sh -U -m amd64 build works
+p - ./build.sh -U -m amd64 build works without xsrc
 n - Where are build has failed, see the footnote for details)
 - - not tested
 
 			x86	arm64
 
-OpenBSD 6.9		n*	-	(9/5/2021)
+OpenBSD 6.9		p*	-	(29/6/2021)
 FreeBSD 13		y	y	(9/5/2021)
 FreeBSD 12.2		y	y	(9/5/2021)
 FreeBSD 11.4		y	-	(9/5/2021)
@@ -22,7 +23,7 @@ Ubuntu 18.04		y	n+	(9/5/2021)
 SUSE Ent 15		y	n+	(9/5/2021)
 Gentoo			y	-	(9/5/2021)
 
-macOS Big Sur		y	-	(9/5/2021)
+macOS Big Sur		y	n++	(9/5/2021)
 macOS Catalina		y	-	(9/5/2021)
 macOS High Sierra	y	-	(12/5/2021)
 
@@ -210,17 +211,9 @@ InstalledDir: /Library/Developer/CommandLineTools/usr/bin
 Problems
 --------
 
-* PR#56150
-1. In tools the library liblto_plugin.so gets created with version
-numbers 0.0 and so cannot be found later on in the build process.
-
-2 #    create  gdb/gdb.info
-/home/cjep/netbsd-current/src/obj/tooldir.OpenBSD-6.9-amd64/bin/nbmakeinfo -I/home/cjep/netbsd-current/src/external/gpl3/gdb/bin/gdb/../../dist/gdb/doc -I/home/cjep/netbsd-current/src/external/gpl3/gdb/bin/gdb/../../dist/gdb/mi  -I/home/cjep/netbsd-current/src/external/gpl3/gdb/bin/gdb/../../dist/readline/readline/doc -I/home/cjep/netbsd-current/src/external/gpl3/gdb/bin/gdb/.. -DGDBN= --no-split --no-version-header -o gdb.info /home/cjep/netbsd-current/src/external/gpl3/gdb/bin/gdb/../../dist/gdb/doc/gdb.texinfo
-Segmentation fault (core dumped) 
-
-3. #    create  amd64/sysinstmsgs.de
-/home/cjep/netbsd-current/src/obj/tooldir.OpenBSD-6.9-amd64/bin/nbsed "s/@@VERSION@@/9.99.82/" /home/cjep/netbsd-current/src/usr.sbin/sysinst/arch/amd64/../../msg.mi.de /home/cjep/netbsd-current/src/usr.sbin/sysinst/arch/amd64/../i386/msg.md.de /home/cjep/netbsd-current/src/usr.sbin/sysinst/arch/amd64/../../msg.mbr.de /home/cjep/netbsd-current/src/usr.sbin/sysinst/arch/amd64/../../msg.pm.de |  /home/cjep/netbsd-current/src/obj/tooldir.OpenBSD-6.9-amd64/bin/nbsed "s/@@MACHINE@@/amd64/" |  /home/cjep/netbsd-current/src/obj/tooldir.OpenBSD-6.9-amd64/bin/nbawk -f /home/cjep/netbsd-current/src/usr.sbin/sysinst/arch/amd64/../../unif.awk -v defines="BOOTSEL AOUT2ELF HAVE_INSTALL_IMAGE" |  /bin/sh /home/cjep/netbsd-current/src/usr.sbin/sysinst/arch/amd64/../../msg_xlat.sh -f sysinstmsgs.fmtcnt > sysinstmsgs.de
-msg_xlat.sh: ERROR Wrong number of format specifiers in "openfail", got 5, expected 4
+* OpenBSD is partial. ./build.sh release works for non-X as of 29th June
+2021.
+For X, several platforms are broken.
 
 
 + PR#56149
@@ -252,4 +245,5 @@ ec2-user@ip-172-31-3-100:~/netbsd-current/src> cc -O   -DCTF_OLD_VERSIONS -I/hom
 /home/ec2-user/netbsd-current/src/tools/libctf/../../external/cddl/osnet/sys/sys/time.h:50:8: error: unknown type name ‘__hide_longlong_t’
  typedef longlong_t hrtime_t;
 
-
+++ 
+Mac OS on M1 is broken here. The GMP library and GCC need updates.
