@@ -1,13 +1,14 @@
 1/7/2021	
 
 y - ./build.sh -U -m amd64 build works
-p - ./build.sh -U -m amd64 build works without xsrc
+w - ./build.sh -U -m amd64 build works with adjustment to host
 n - Where are build has failed, see the footnote for details)
 - - not tested
 
 			x86	arm64
 
-OpenBSD 6.9		p*	-	(29/6/2021)
+OpenBSD 6.9		w^	-	(29/6/2021)
+
 FreeBSD 13		y	y	(9/5/2021)
 FreeBSD 12.2		y	y	(9/5/2021)
 FreeBSD 11.4		y	-	(9/5/2021)
@@ -211,9 +212,14 @@ InstalledDir: /Library/Developer/CommandLineTools/usr/bin
 Problems
 --------
 
-* OpenBSD is partial. ./build.sh release works for non-X as of 29th June
-2021.
-For X, several platforms are broken.
+^ ./build.sh release works for non-X as of 29th June 2021.
+
+Add:
+        :datasize=infinity:\
+        :stacksize-cur=8M:\
+to login.conf for the relevant profile (or build as root) to avoid
+memory exhaustion problems on MIPS targets and librt (used to X on
+amd64, i386 and evbarm-el)
 
 
 + PR#56149
