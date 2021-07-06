@@ -1,15 +1,19 @@
-There are problems building NetBSD sources on OpenBSD.
-I've tested this on two different OpenBSD 6.9 machines.
+All platforms compile to release with X on OpenBSD 6.9 
+(except sun2 but this is a general issue).
 
-Still open
-----------
-* Memory exhaustion building librt (amd64 & i386 X won't build)
-During the build of LLVM librt on amd64 and i386, my 8G machine 
-doesn't have enough virtual memory. This occurs when building xsrc
-because the library is a prerequisite.
+Workarounds needed
+------------------
 
-*. gcc failures on MIPS platforms
-Gcc will not cross-build on the MIPS architectures.
+* Memory exhaustion building librt (e.g. when building X on amd64, 
+  i386, evbarm64-el)
+* gcc failures on MIPS targets
+
+Both of these are caused by memory exhaustion. To workaround, either 
+build as root or ask your friendly administrator to increase your
+limits in /etc/login.conf:
+
+	:datasize=infinity:\
+        :stacksize-cur=8M:\
 
 Fixed
 -----
