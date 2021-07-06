@@ -167,11 +167,9 @@ statefile="$logdir/statefile"
 
 # Check for x sources
 xflags=""
-if [ "$buildx" = "1" ]; then
-	if [ ! -d "$sourceroot/xsrc" ]; then
-		echo "Cannot find xsrc - ignoring" >&2
-		buildx="0"
-	fi
+if [ "$buildx" = "1" ] && [ ! -d "$sourceroot/xsrc" ]; then
+	echo "Cannot find xsrc - ignoring" >&2
+	buildx="0"
 fi
 
 # Override targets from the CLI (overrides -A)
@@ -252,11 +250,11 @@ if [ -f "$statefile" ]; then
 	previous=1
 fi
 
-failure=0
 firstrun=1
 
 while [ 1 = 1 ]; do
 
+failure=0
 	runlogdate=`date +%Y%m%d%H%M`
 	runlogdir="$logdir/$runlogdate"
 	mkdir -p $runlogdir
@@ -271,7 +269,6 @@ while [ 1 = 1 ]; do
 	total_starttime=`date +%s`
 
 	iecho "Starting $make_target"
-#	iecho "My PID: $$"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
@@ -319,12 +316,13 @@ while [ 1 = 1 ]; do
 	
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
-	# Build each machine, then build the release
-	# (separated out because the build can work but not the release)
+
+	# Build each machine target
 	#
 
 	numberoftargets=`echo $targets | wc -w | sed 's/ //'g`
 	number="0"
+
 	for machine in $targets; do
 
 		number=`expr $number + 1`
@@ -340,17 +338,20 @@ while [ 1 = 1 ]; do
 		fi
 
 		echo "$machine" > $statefile
-
+		
 		if [ "$buildx" = "1" ]; then
-			if [ "$machine" = "sun2" ]; then
-				qecho "X known broken on $machine - skipping X"
-				xflags=""
-				withX=""
-			else
-				xflags="-x -X $sourceroot/xsrc"
-				withX=" with X"
-			fi
+			xflags="-x -X $sourceroot/xsrc"
+			withX=" with X"
 		fi
+
+		# Machine exceptions
+		#
+		if [ "$machine" = "sun2" ]; then
+			qecho "X known broken on $machine - skipping X"
+			xflags=""
+			withX=""
+		fi
+		
 		logfile="$runlogdir/`date +%Y%m%d%H%M`-$machine"".txt"
 
 		objdir="../objects/$machine"
@@ -364,6 +365,7 @@ while [ 1 = 1 ]; do
 		
 		flags="-O $objdir -j $jobs -U $updateflag $xflags $otherflags -m $machine"
 		[ "$quiet" = "0" ] && tail -f $logfile &
+
 		./build.sh $flags $make_target >> $logfile 2>&1
 		if [ "$?" != "0" ]; then
 			fecho "$make_target$withX FAILED"
@@ -371,9 +373,9 @@ while [ 1 = 1 ]; do
 			if [ "$retryonfail" = "1" ]; then
 				failure=0
 				decho "Cleaning objects for $machine"
-				qecho "$make_target$withX restarted from scratch"
 				rm -rf "$objdir"
 				flags="-O $objdir -j $jobs -U $xflags $otherflags -m $machine"
+				qecho "$make_target$withX restarted from scratch"
 				./build.sh $flags $make_target >> $logfile 2>&1
 				if [ "$?" != "0" ]; then
 					fecho "$make_target$withX FAILED FROM CLEAN"
@@ -429,7 +431,9 @@ while [ 1 = 1 ]; do
 		scp -qr $runlogdir $uploadurl
 	fi
 	echo ""
-	failure=0
+
+	# If we are a one shot pony, let's exit here
 	[ "$continuous" != "1" ] && exit 0;
+
 	updatecvs=1 # Update CVS next time regardless
 done
