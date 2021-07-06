@@ -1,0 +1,31 @@
+
+1. gmp library does not build in tools:
+
+checking size of unsigned long... 8
+checking size of mp_limb_t... 8
+configure: error: Oops, mp_limb_t is 64 bits, but the assembler code
+in this configuration expects 32 bits.
+
+*** Failed target: .configure_done
+*** Failed commands:
+	@mkdir build 2>/dev/null || true
+	@(cd build && ${CONFIGURE_ENV} ${HOST_SH} ${GNUHOSTDIST}/configure ${CONFIGURE_ARGS})
+	@echo ${BUILD_PLATFORM} > $@
+*** [.configure_done] Error code 1
+
+2. Dropping in gmp-6.2.1 and restarting, the build of gcc fails:
+c++ -no-pie   -O -DIN_GCC  -DCROSS_DIRECTORY_STRUCTURE  -fno-strict-aliasing -fno-exceptions -fno-rtti -fasynchronous-unwind-tables -W -Wall -Wno-narrowing -Wwrite-strings -Wcast-qual -Wno-error=format-diag -Wmissing-format-attribute -Woverloaded-virtual -pedantic -Wno-long-long -Wno-variadic-macros -Wno-overlength-strings   -DHAVE_CONFIG_H  -o cc1 c/c-lang.o c-family/stub-objc.o attribs.o c/c-errors.o c/c-decl.o c/c-typeck.o c/c-convert.o c/c-aux-info.o c/c-objc-common.o c/c-parser.o c/c-fold.o c/gimple-parser.o c-family/c-common.o c-family/c-cppbuiltin.o c-family/c-dump.o c-family/c-format.o c-family/c-gimplify.o c-family/c-indentation.o c-family/c-lex.o c-family/c-omp.o c-family/c-opts.o c-family/c-pch.o c-family/c-ppoutput.o c-family/c-pragma.o c-family/c-pretty-print.o c-family/c-semantics.o c-family/c-ada-spec.o c-family/c-ubsan.o c-family/known-headers.o c-family/c-attribs.o c-family/c-warn.o c-family/c-spellcheck.o i386-c.o default-c.o \
+	  cc1-checksum.o libbackend.a main.o libcommon-target.a libcommon.a ../libcpp/libcpp.a ../libdecnumber/libdecnumber.a libcommon.a ../libcpp/libcpp.a  -liconv ../libbacktrace/.libs/libbacktrace.a ../libiberty/libiberty.a ../libdecnumber/libdecnumber.a   -L/Users/chris/src/NetBSD/current/src/../objects/amd64/tooldir.Darwin-20.5.0-arm64/lib -L/Users/chris/src/NetBSD/current/src/../objects/amd64/tooldir.Darwin-20.5.0-arm64/lib -L/Users/chris/src/NetBSD/current/src/../objects/amd64/tooldir.Darwin-20.5.0-arm64/lib -lmpc -lmpfr -lgmp   -lz 
+clang: warning: argument unused during compilation: '-no-pie' [-Wunused-command-line-argument]
+Undefined symbols for architecture arm64:
+  "_host_hooks", referenced from:
+      c_common_no_more_pch() in c-pch.o
+      general_init(char const*, bool) in libbackend.a(toplev.o)
+      gt_pch_save(__sFILE*) in libbackend.a(ggc-common.o)
+      gt_pch_restore(__sFILE*) in libbackend.a(ggc-common.o)
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+nbgmake[1]: *** [cc1] Error 1
+nbgmake[1]: Leaving directory `/Users/chris/src/NetBSD/current/objects/amd64/tools/gcc/build/gcc'
+nbgmake: *** [all-gcc] Error 2
+

@@ -270,7 +270,7 @@ while [ 1 = 1 ]; do
 
 	total_starttime=`date +%s`
 
-	iecho "Starting build"
+	iecho "Starting $make_target"
 #	iecho "My PID: $$"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
@@ -357,7 +357,7 @@ while [ 1 = 1 ]; do
 		mkdir -p $objdir
 
 		starttime=`date +%s`
-		qecho "build$withX started"
+		qecho "$make_target$withX started"
 		decho "logging to $logfile"
 		decho "objects at $objdir"
 		touch $logfile
