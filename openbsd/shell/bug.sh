@@ -1,6 +1,10 @@
 
+# The actual message causing the problem
+#
 msg="x%s konnte nicht genet werden, die Fehlermeldung lautet: %s."
 msg1="%s konnte nicht genet werden, die Fehlermeldung lautet: %s."
+msg2="de"
+msg3=""
 
 IFS="%"
 
