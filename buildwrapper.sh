@@ -73,6 +73,11 @@ keeplogs=0
 #
 updateflag="-u"
 
+# Cleanups
+#
+cleandest="0"
+cleanobj="0"
+
 # Retry on fail
 #
 retryonfail=0
@@ -115,9 +120,11 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -X  don't build X
   -n  don't upload logs
   -t  make target (e.g. build, release - default is build)
-  -Z  remove state
+  -Z  remove statefile
   -R  restart, attempt to start from state file 
   -r  retry build with empty object directory if failure
+  -e  erase destdir before builds
+  -E  erase objects before builds
   targets given on the command line override -A and defaults
 "
 
@@ -152,6 +159,12 @@ while [ $# -gt 0 ]; do
 
 # Retry the build with an empty object directory
         -r)	retryonfail=1; ;;
+
+# Erasure
+        -e)	cleandest="1"; ;;
+        -E)	cleanobj="1"; ;;
+
+# Help!
         -h|--help)              
                                 echo "$USAGE"; exit ;;
         -*)             echo "${0##*/}: unknown option \"$1\"" 1>&2
@@ -362,6 +375,16 @@ failure=0
 		decho "logging to $logfile"
 		decho "objects at $objdir"
 		touch $logfile
+
+		if [ "$cleandest" = "1" ]; then
+			decho "Cleaning $objdir/destdir for $machine"
+			rm -rf "$objdir/destdir"*
+		fi
+
+		if [ "$cleanobj" = "1" ]; then
+			decho "Cleaning objects for $machine"
+			rm -rf "$objdir"
+		fi
 		
 		flags="-O $objdir -j $jobs -U $updateflag $xflags $otherflags -m $machine"
 		[ "$quiet" = "0" ] && tail -f $logfile &
