@@ -337,6 +337,8 @@ failure=0
 	number="0"
 
 	for machine in $targets; do
+		cleandest_this=$cleandest	
+		cleanobj_this=$cleanobj
 
 		number=`expr $number + 1`
 		whatwedo="[$number/$numberoftargets] $machine"
@@ -347,6 +349,9 @@ failure=0
 		#
 		if [ "$state" != "" ]; then
 			[ "$state" != "$machine" ] && continue
+			# if we are skipping to state, don't clean
+			cleandest_this=0
+			cleanobj_this=0
 			state=""
 		fi
 
@@ -376,12 +381,12 @@ failure=0
 		decho "objects at $objdir"
 		touch $logfile
 
-		if [ "$cleandest" = "1" ]; then
+		if [ "$cleandest_this" = "1" ]; then
 			decho "Cleaning $objdir/destdir for $machine"
 			rm -rf "$objdir/destdir"*
 		fi
 
-		if [ "$cleanobj" = "1" ]; then
+		if [ "$cleanobj_this" = "1" ]; then
 			decho "Cleaning objects for $machine"
 			rm -rf "$objdir"
 		fi
