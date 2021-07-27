@@ -113,7 +113,7 @@ my $_td="td align=\"center\"";
 open OUT, ">$webresultsroot/index.html.new";
 
 print OUT "<html>";
-print OUT "<head></head><body>";
+print OUT "<head><meta http-equiv=\"refresh\" content=\"600\"></head><body>";
 
 print OUT "<table align=\"center\">";
 # HEADINGS
