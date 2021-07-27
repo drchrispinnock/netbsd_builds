@@ -396,14 +396,16 @@ failure=0
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
 	
+	pwithX=" without X"
 	if [ "$buildx" = "1" ]; then
 		xflags="-x -X $sourceroot/xsrc"
 		withX=" with X"
+		pwithX=" with X"
 	fi
 	
-	paramstring="$maketarget$withX"
+	paramstring="${make_target}${pwithX}"
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres $paramstring
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$paramstring"
 	
 	# Build each machine target
 	#
