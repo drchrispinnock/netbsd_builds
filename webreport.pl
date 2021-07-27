@@ -146,7 +146,7 @@ print OUT "</tr>\n";
 
 print OUT "<tr><td></td>";
 foreach my $host (@Hosts) {
-	print OUT "<$_td>$target{$param}</td>";
+	print OUT "<$_td>$param{$host}</td>";
 }
 print OUT "</tr>\n";
 
