@@ -165,7 +165,7 @@ foreach my $platform (@Platforms) {
 			
 			# Defaults
 			$color = "#B2BEB5"; # Ash grey
-			$date = "-";
+			$date = "";
 			
 			if (defined($status{$host}{$platform})) {
 				
