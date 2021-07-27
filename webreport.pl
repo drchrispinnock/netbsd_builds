@@ -191,6 +191,9 @@ foreach my $platform (@Platforms) {
 }
 
 print OUT "</table>";
+
+my $dispdate = `date`;
+print OUT "<center><em>Last updated $dispdate</em></center>\n";
 print OUT "</body></html>\n";
 close OUT;
 system("mv $webresultsroot/index.html.new $webresultsroot/index.html");
