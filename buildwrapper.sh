@@ -14,10 +14,16 @@ targets="$mypref" # Default
 #
 webresultsroot="/buildres"
 webresults=1
+paramstring=""
+
+# NFS doesn't work for all, so provide somewhere to copy webresults
+#
+copywebresultsroot=""
+copywebresults=0
 
 # My Hostname and platform
 #
-hostname=`hostname -s`
+hostname=`hostname -s | tr "[:upper:]" "[:lower:]"`
 os=`uname -s`
 hostmach=`uname -m`
 osres=`uname -r`
@@ -112,7 +118,7 @@ sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
-		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [targets]
+		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [-w webroot] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS on first build run
@@ -132,7 +138,9 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -r  retry build with empty object directory if failure
   -e  erase destdir before builds
   -E  erase objects before builds
+	-w webroot  build web results into the specified directory
 	-W  don't output web results
+	-y webroottarget  copy the web results to a server via SSH
   targets given on the command line override -A and defaults
 "
 
@@ -166,20 +174,25 @@ while [ $# -gt 0 ]; do
         -R)	removestate=0; ;;
 
 # Retry the build with an empty object directory
+#
         -r)	retryonfail=1; ;;
 
 # Erasure
+#
         -e)	cleandest="1"; ;;
         -E)	cleanobj="1"; ;;
 
 # No web results
 				-W) webresults=0; ;;
+				-w) webresultsroot="$2"; shift; webresults=1; ;;
+				-y) copywebresultsroot="$2"; shift; 
+						webresultsroot="$sourceroot/buildres"; 
+						copywebresults=1; ;;
 
 # Help!
-        -h|--help)              
-                                echo "$USAGE"; exit ;;
-        -*)             echo "${0##*/}: unknown option \"$1\"" 1>&2
-                          echo "$USAGE" 1>&2; exit 1 ;;
+        -h|--help)	echo "$USAGE"; exit ;;
+        -*)					echo "${0##*/}: unknown option \"$1\"" 1>&2
+                    echo "$USAGE" 1>&2; exit 1 ;;
 	*)	break; # rest of args are targets
 	esac
 	shift
@@ -189,8 +202,6 @@ done
 #
 mkdir -p "$logdir"
 statefile="$logdir/statefile"
-
-
 
 # Check for x sources
 xflags=""
@@ -216,7 +227,7 @@ export RELEASEDIR="$sourceroot/releases"
 date_format="%d/%m/%Y %H:%M"
 
 outputwebdetail() {
-	# $targetrelease $hostname $os $hostmach $osres
+	# $targetrelease $hostname $os $hostmach $osres $param
 	#
 	if [ "$webresults" = "1" ]; then
 		mkdir -p "$webresultsroot/$hostname"
@@ -228,6 +239,8 @@ outputwebdetail() {
 		echo "hostos|$3" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
+		echo "param|$6" >> "$webresultsroot/$hostname/detail.txt"
+		
 	fi
 	
 }
@@ -245,6 +258,10 @@ webresult() {
 			tail -200 "$3" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
 		fi
 		
+		
+		if [ "$copywebresults" = "1" ]; then
+			scp -rq $webresultsroot/$hostname $copywebresultsroot
+		fi
 	fi
 
 }
@@ -379,7 +396,14 @@ failure=0
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres
+	if [ "$buildx" = "1" ]; then
+		xflags="-x -X $sourceroot/xsrc"
+		withX=" with X"
+	fi
+	
+	paramstring="$maketarget$withX"
+	
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres $paramstring
 	
 	# Build each machine target
 	#
@@ -407,10 +431,7 @@ failure=0
 
 		echo "$machine" > $statefile
 		
-		if [ "$buildx" = "1" ]; then
-			xflags="-x -X $sourceroot/xsrc"
-			withX=" with X"
-		fi
+		
 
 		# Machine exceptions
 		#
@@ -493,6 +514,7 @@ failure=0
 
 		rm -f $statefile
 		previous=0
+		
 		
 	done
 	total_endtime=`date +%s`

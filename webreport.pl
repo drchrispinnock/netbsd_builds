@@ -18,9 +18,11 @@ my @Hosts;
 my %Platforms;
 
 my %target;
+my %param;
 my %hostos;
 my %hostmach;
 my %hostver;
+
 
 my %status;
 my %version;
@@ -54,7 +56,9 @@ HOST: while(my $host = readdir $dh) {
 	
 	# Should really check that these are all set, but...
 	#
+	$param{$host} = "";
 	$target{$host} = $scoop{'target'} if $scoop{'target'};
+	$param{$host} = $scoop{'param'} if $scoop{'param'};
 	$hostos{$host} = $scoop{'hostos'} if $scoop{'hostos'};
 	$hostmach{$host} = $scoop{'hostmach'} if $scoop{'hostmach'};
 	$hostver{$host} = $scoop{'hostver'} if $scoop{'hostver'};		
@@ -139,6 +143,13 @@ foreach my $host (@Hosts) {
 	print OUT "<$_td>$target{$host}</td>";
 }
 print OUT "</tr>\n";
+
+print OUT "<tr><td></td>";
+foreach my $host (@Hosts) {
+	print OUT "<$_td>$target{$param}</td>";
+}
+print OUT "</tr>\n";
+
 print OUT "<tr><td> </td></tr>\n";
 
 foreach my $platform (@Platforms) {
