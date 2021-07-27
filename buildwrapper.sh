@@ -10,6 +10,18 @@
 mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
 targets="$mypref" # Default
 
+# Directory for outputting results files for a web interface
+#
+webresultsroot="/buildres"
+webresults=1
+
+# My Hostname and platform
+#
+hostname=`hostname -s`
+os=`uname -s`
+hostmach=`uname -m`
+osres=`uname -r`
+
 # Don't remove the state (default) - the state allows the script
 # to pick up from where it left off, sort of.
 #
@@ -100,7 +112,7 @@ sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
-		[ -t build|release] [-n] [-Z] [-R] [-r] [targets]
+		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS on first build run
@@ -120,6 +132,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -r  retry build with empty object directory if failure
   -e  erase destdir before builds
   -E  erase objects before builds
+	-W  don't output web results
   targets given on the command line override -A and defaults
 "
 
@@ -159,6 +172,9 @@ while [ $# -gt 0 ]; do
         -e)	cleandest="1"; ;;
         -E)	cleanobj="1"; ;;
 
+# No web results
+				-W) webresults=0; ;;
+
 # Help!
         -h|--help)              
                                 echo "$USAGE"; exit ;;
@@ -170,8 +186,11 @@ while [ $# -gt 0 ]; do
 done
 
 # Make the log directory
+#
 mkdir -p "$logdir"
 statefile="$logdir/statefile"
+
+
 
 # Check for x sources
 xflags=""
@@ -192,8 +211,41 @@ fi
 export RELEASEDIR="$sourceroot/releases"
 
 # Logging date format
+#
 #date_format="%Y%m%d%H%M"
 date_format="%d/%m/%Y %H:%M"
+
+outputwebdetail() {
+	# $targetrelease $hostname $os $hostmach $osres
+	#
+	if [ "$webresults" = "1" ]; then
+		mkdir -p "$webresultsroot/$hostname"
+		mkdir -p "$webresultsroot/$hostname/build"
+		mkdir -p "$webresultsroot/$hostname/logs"
+		
+		echo "target|$1" > "$webresultsroot/$hostname/detail.txt"
+		echo "hostname|$2" >> "$webresultsroot/$hostname/detail.txt"
+		echo "hostos|$3" >> "$webresultsroot/$hostname/detail.txt"
+		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
+		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
+	fi
+	
+}
+
+webresult() {
+	# Expects 3 arguments: Machine, Status, Logfile
+
+	if [ "$webresults" = "1" ]; then
+		
+		echo "$2" > "$webresultsroot/$hostname/build/$machine"
+		if [ "$3" != "" ]; then
+			cp "$3" "$webresultsroot/$hostname/logs/${machine}-full.txt"
+			tail -200 "$3" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
+		fi
+		
+	fi
+
+}
 
 # Clear a line
 del() {
@@ -323,11 +375,12 @@ failure=0
 	fi
 	
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
-	iecho "Building NetBSD $targetrelease on `hostname -s` (`uname -s`/`uname -m`/`uname -r`)"
-
+	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
+	
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres
+	
 	# Build each machine target
 	#
-
 	numberoftargets=`echo $targets | wc -w | sed 's/ //'g`
 	number="0"
 
@@ -375,6 +428,7 @@ failure=0
 		decho "logging to $logfile"
 		decho "objects at $objdir"
 		touch $logfile
+		webresult $make_target "PROG" ""
 
 		if [ "$cleandest_this" = "1" ]; then
 			decho "Cleaning $objdir/destdir for $machine"
@@ -403,7 +457,10 @@ failure=0
 				if [ "$?" != "0" ]; then
 					fecho "$make_target$withX FAILED FROM CLEAN"
 					failure=1
+					webresult $make_target "FAIL" "$logfile"
 				fi
+			else
+				webresult $make_target "FAIL" "$logfile" 
 			fi
 
 		fi
@@ -427,12 +484,14 @@ failure=0
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
 			iecho "$make_target$withX completed in $duration$partial"
+			webresult $make_target "OK" "$logfile" 
 			[ "$keeplogs" = "0" ] && rm -f "$logfile"
 			[ "$keeplogs" = "1" ] && gzip "$logfile"
 		fi
 
 		rm -f $statefile
 		previous=0
+		
 	done
 	total_endtime=`date +%s`
 	total_dur_s=`expr $total_endtime - $total_starttime`
