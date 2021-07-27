@@ -237,7 +237,9 @@ webresult() {
 
 	if [ "$webresults" = "1" ]; then
 		
-		echo "$2" > "$webresultsroot/$hostname/build/$machine"
+		echo "status|$2" > "$webresultsroot/$hostname/build/$machine"
+		echo "version|$targetrelease" >> "$webresultsroot/$hostname/build/$machine"
+		echo "date|`date +%d/%m/%Y`" >> "$webresultsroot/$hostname/build/$machine"
 		if [ "$3" != "" ]; then
 			cp "$3" "$webresultsroot/$hostname/logs/${machine}-full.txt"
 			tail -200 "$3" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
