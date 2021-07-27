@@ -112,7 +112,7 @@ sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
-		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [targets]
+		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [-w webroot] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS on first build run
@@ -132,6 +132,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -r  retry build with empty object directory if failure
   -e  erase destdir before builds
   -E  erase objects before builds
+	-w webroot  build web results into the specified directory
 	-W  don't output web results
   targets given on the command line override -A and defaults
 "
@@ -174,6 +175,7 @@ while [ $# -gt 0 ]; do
 
 # No web results
 				-W) webresults=0; ;;
+				-w) webresultsroot="$2"; shift; webresults=1; ;;
 
 # Help!
         -h|--help)              
