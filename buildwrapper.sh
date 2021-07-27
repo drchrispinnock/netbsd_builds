@@ -14,6 +14,7 @@ targets="$mypref" # Default
 #
 webresultsroot="/buildres"
 webresults=1
+paramstring=""
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
 #
@@ -226,7 +227,7 @@ export RELEASEDIR="$sourceroot/releases"
 date_format="%d/%m/%Y %H:%M"
 
 outputwebdetail() {
-	# $targetrelease $hostname $os $hostmach $osres
+	# $targetrelease $hostname $os $hostmach $osres $param
 	#
 	if [ "$webresults" = "1" ]; then
 		mkdir -p "$webresultsroot/$hostname"
@@ -238,6 +239,8 @@ outputwebdetail() {
 		echo "hostos|$3" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
+		echo "param|$6" >> "$webresultsroot/$hostname/detail.txt"
+		
 	fi
 	
 }
@@ -393,7 +396,14 @@ failure=0
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres
+	if [ "$buildx" = "1" ]; then
+		xflags="-x -X $sourceroot/xsrc"
+		withX=" with X"
+	fi
+	
+	paramstring="$maketarget$withX"
+	
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres $paramstring
 	
 	# Build each machine target
 	#
@@ -421,10 +431,7 @@ failure=0
 
 		echo "$machine" > $statefile
 		
-		if [ "$buildx" = "1" ]; then
-			xflags="-x -X $sourceroot/xsrc"
-			withX=" with X"
-		fi
+		
 
 		# Machine exceptions
 		#
