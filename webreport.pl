@@ -13,7 +13,6 @@ use strict;
 use warnings;
 
 my $webresultsroot="/buildres"; 
-$webresultsroot="buildres"; # XXX
 
 my @Hosts;
 my %Platforms;
@@ -63,6 +62,11 @@ HOST: while(my $host = readdir $dh) {
 	$hostos{$host} = $scoop{'hostos'} if $scoop{'hostos'};
 	$hostmach{$host} = $scoop{'hostmach'} if $scoop{'hostmach'};
 	$hostver{$host} = $scoop{'hostver'} if $scoop{'hostver'};		
+
+	if ($hostver{$host} =~ m/\-/) {
+		$hostver{$host} =~ s/\-.*$//;
+	}
+
 
 	my $hdh;
 	unless(opendir $hdh, "$webresultsroot/$host/build") {
@@ -142,7 +146,7 @@ print OUT "</tr>\n";
 
 print OUT "<tr><td></td>";
 foreach my $host (@Hosts) {
-	print OUT "<$_td>$target{$param}</td>";
+	print OUT "<$_td>$param{$host}</td>";
 }
 print OUT "</tr>\n";
 
