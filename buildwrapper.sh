@@ -10,11 +10,6 @@
 mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
 targets="$mypref" # Default
 
-# Upload logs to somewhere... off by default
-#
-uploadurl="www.netbsd.org:public_html"
-uploadr=0
-
 # Don't remove the state (default) - the state allows the script
 # to pick up from where it left off, sort of.
 #
@@ -454,10 +449,6 @@ failure=0
 	whatwedo=""
 	iecho "Build completed === ($total_dur_h:$total_dur_m:$total_dur_s)"
 
-	if [ "$uploadr" = "1" ] && [ "$failure" = "1" ]; then
-		qecho "Uploading results to $uploadurl"
-		scp -qr $runlogdir $uploadurl
-	fi
 	echo ""
 
 	# If we are a one shot pony, let's exit here
