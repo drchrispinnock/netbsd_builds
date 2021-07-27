@@ -175,6 +175,8 @@ foreach my $platform (@Platforms) {
 				
 				$date = $date{$host}{$platform} if ($date{$host}{$platform} &&
 												$status{$host}{$platform} ne 'PROG');
+				
+				$date = "<em>Building</em>" if $status{$host}{$platform} eq 'PROG');
 												
 				$link = "$host/logs/$platform-tail.txt" if $status{$host}{$platform} eq 'FAIL';
 			}
