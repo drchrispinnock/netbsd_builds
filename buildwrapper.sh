@@ -167,9 +167,11 @@ while [ $# -gt 0 ]; do
         -R)	removestate=0; ;;
 
 # Retry the build with an empty object directory
+#
         -r)	retryonfail=1; ;;
 
 # Erasure
+#
         -e)	cleandest="1"; ;;
         -E)	cleanobj="1"; ;;
 
@@ -178,10 +180,9 @@ while [ $# -gt 0 ]; do
 				-w) webresultsroot="$2"; shift; webresults=1; ;;
 
 # Help!
-        -h|--help)              
-                                echo "$USAGE"; exit ;;
-        -*)             echo "${0##*/}: unknown option \"$1\"" 1>&2
-                          echo "$USAGE" 1>&2; exit 1 ;;
+        -h|--help)	echo "$USAGE"; exit ;;
+        -*)					echo "${0##*/}: unknown option \"$1\"" 1>&2
+                    echo "$USAGE" 1>&2; exit 1 ;;
 	*)	break; # rest of args are targets
 	esac
 	shift
