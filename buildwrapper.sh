@@ -15,9 +15,14 @@ targets="$mypref" # Default
 webresultsroot="/buildres"
 webresults=1
 
+# NFS doesn't work for all, so provide somewhere to copy webresults
+#
+copywebresultsroot=""
+copywebresults=0
+
 # My Hostname and platform
 #
-hostname=`hostname -s`
+hostname=`hostname -s | tr "[:upper:]" "[:lower:]"`
 os=`uname -s`
 hostmach=`uname -m`
 osres=`uname -r`
@@ -134,6 +139,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -E  erase objects before builds
 	-w webroot  build web results into the specified directory
 	-W  don't output web results
+	-y webroottarget  copy the web results to a server via SSH
   targets given on the command line override -A and defaults
 "
 
@@ -178,6 +184,9 @@ while [ $# -gt 0 ]; do
 # No web results
 				-W) webresults=0; ;;
 				-w) webresultsroot="$2"; shift; webresults=1; ;;
+				-y) copywebresultsroot="$2"; shift; 
+						webresultsroot="$sourceroot/buildres"; 
+						copywebresults=1; ;;
 
 # Help!
         -h|--help)	echo "$USAGE"; exit ;;
@@ -192,8 +201,6 @@ done
 #
 mkdir -p "$logdir"
 statefile="$logdir/statefile"
-
-
 
 # Check for x sources
 xflags=""
@@ -248,6 +255,10 @@ webresult() {
 			tail -200 "$3" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
 		fi
 		
+		
+		if [ "$copywebresults" = "1" ]; then
+			scp -rq $webresultsroot/$hostname $copywebresultsroot
+		fi
 	fi
 
 }
@@ -496,6 +507,7 @@ failure=0
 
 		rm -f $statefile
 		previous=0
+		
 		
 	done
 	total_endtime=`date +%s`
