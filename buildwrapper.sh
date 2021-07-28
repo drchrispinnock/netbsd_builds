@@ -14,7 +14,6 @@ targets="$mypref" # Default
 #
 webresultsroot="/buildres"
 webresults=1
-paramstring=""
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
 #
@@ -227,8 +226,13 @@ export RELEASEDIR="$sourceroot/releases"
 date_format="%d/%m/%Y %H:%M"
 
 outputwebdetail() {
-	# $targetrelease $hostname $os $hostmach $osres $param
+	# $targetrelease $hostname $os $hostmach $osres $maketarget $withX
 	#
+	param="$6 without X"
+	if [ "$7" = "1" ]; then
+		param="$6 with X"
+	fi
+	
 	if [ "$webresults" = "1" ]; then
 		mkdir -p "$webresultsroot/$hostname"
 		mkdir -p "$webresultsroot/$hostname/build"
@@ -239,8 +243,9 @@ outputwebdetail() {
 		echo "hostos|$3" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
-		echo "param|$6" >> "$webresultsroot/$hostname/detail.txt"
-		
+		echo "param|$param" >> "$webresultsroot/$hostname/detail.txt"
+		echo "maketarget|$6" >> "$webresultsroot/$hostname/detail.txt"
+		echo "withX|$7" >> "$webresultsroot/$hostname/detail.txt"
 	fi
 	
 }
@@ -409,16 +414,13 @@ failure=0
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
 	
-	pwithX=" without X"
 	if [ "$buildx" = "1" ]; then
 		xflags="-x -X $sourceroot/xsrc"
 		withX=" with X"
-		pwithX=" with X"
 	fi
 	
-	paramstring="${make_target}${pwithX}"
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$paramstring"
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$make_target" $buildx
 	
 	# Build each machine target
 	#
