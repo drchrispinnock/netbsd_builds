@@ -113,7 +113,7 @@ my $_td="td align=\"center\"";
 open OUT, ">$webresultsroot/index.html.new";
 
 print OUT "<html>";
-print OUT "<head></head><body>";
+print OUT "<head><meta http-equiv=\"refresh\" content=\"600\"></head><body>";
 
 print OUT "<table align=\"center\">";
 # HEADINGS
@@ -165,7 +165,7 @@ foreach my $platform (@Platforms) {
 			
 			# Defaults
 			$color = "#B2BEB5"; # Ash grey
-			$date = "-";
+			$date = "";
 			
 			if (defined($status{$host}{$platform})) {
 				
@@ -175,7 +175,8 @@ foreach my $platform (@Platforms) {
 				
 				$date = $date{$host}{$platform} if ($date{$host}{$platform} &&
 												$status{$host}{$platform} ne 'PROG');
-												
+				
+				$date = "<em>Building</em>" if ($status{$host}{$platform} eq 'PROG');
 				$link = "$host/logs/$platform-tail.txt" if $status{$host}{$platform} eq 'FAIL';
 			}
 			
@@ -191,6 +192,9 @@ foreach my $platform (@Platforms) {
 }
 
 print OUT "</table>";
+
+my $dispdate = `date`;
+print OUT "<center><em>Last updated $dispdate</em></center>\n";
 print OUT "</body></html>\n";
 close OUT;
 system("mv $webresultsroot/index.html.new $webresultsroot/index.html");
