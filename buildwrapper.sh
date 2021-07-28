@@ -360,10 +360,23 @@ failure=0
 		cvslogfile="$runlogdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
 
 		if [ "$updatecvs" != "0" ]; then
-			decho "Updating sources..."
+			iecho "Updating src from cvs..."
 			[ "$quiet" = "0" ] && tail -f $cvslogfile &
 			cvs -q up -dP >> "$cvslogfile" 2>&1
-			[ "$buildx" = "1" ] && ( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+			
+			if [ "$?" != "0" ]; then
+				fecho "cvs update failed - bailing"
+				exit 6
+			fi
+
+			if [ "$buildx" = "1" ]; then 
+				iecho "Updating xsrc from cvs..."
+				( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+				if [ "$?" != "0" ]; then
+					fecho "cvs update failed - bailing"
+					exit 6
+				fi
+			fi
 
 			egrep "^C" "$cvslogfile" 2>&1 >/dev/null
 			if [ "$?" = "0" ]; then
