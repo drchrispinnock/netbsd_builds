@@ -14,7 +14,6 @@ targets="$mypref" # Default
 #
 webresultsroot="/buildres"
 webresults=1
-paramstring=""
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
 #
@@ -227,8 +226,13 @@ export RELEASEDIR="$sourceroot/releases"
 date_format="%d/%m/%Y %H:%M"
 
 outputwebdetail() {
-	# $targetrelease $hostname $os $hostmach $osres $param
+	# $targetrelease $hostname $os $hostmach $osres $maketarget $withX
 	#
+	param="$6 without X"
+	if [ "$7" = "1" ]; then
+		param="$6 with X"
+	fi
+	
 	if [ "$webresults" = "1" ]; then
 		mkdir -p "$webresultsroot/$hostname"
 		mkdir -p "$webresultsroot/$hostname/build"
@@ -239,9 +243,10 @@ outputwebdetail() {
 		echo "hostos|$3" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
-		echo "param|$6" >> "$webresultsroot/$hostname/detail.txt"
-		echo "builddate|$7" >> "$webresultsroot/$hostname/detail.txt"
-		
+		echo "builddate|$8" >> "$webresultsroot/$hostname/detail.txt"
+		echo "param|$param" >> "$webresultsroot/$hostname/detail.txt"
+		echo "maketarget|$6" >> "$webresultsroot/$hostname/detail.txt"
+		echo "withX|$7" >> "$webresultsroot/$hostname/detail.txt"
 	fi
 	
 }
@@ -341,7 +346,7 @@ failure=0
 	mkdir -p $runlogdir
 	whatwedo=""
 
-	(cd $logdir; rm -f current; ln -sf $runlogdate current)
+	(cd $logdir; rm -f last; mv -f current last; ln -sf $runlogdate current)
 
 	masterlogfile=$runlogdir/`date +%Y%m%d%H%M`-master.txt
 	faillogfile=$logdir/failures.txt
@@ -362,10 +367,23 @@ failure=0
 		cvslogfile="$runlogdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
 
 		if [ "$updatecvs" != "0" ]; then
-			decho "Updating sources..."
+			iecho "Updating src from cvs..."
 			[ "$quiet" = "0" ] && tail -f $cvslogfile &
 			cvs -q up -dP >> "$cvslogfile" 2>&1
-			[ "$buildx" = "1" ] && ( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+			
+			if [ "$?" != "0" ]; then
+				fecho "cvs update failed - bailing"
+				exit 6
+			fi
+
+			if [ "$buildx" = "1" ]; then 
+				iecho "Updating xsrc from cvs..."
+				( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
+				if [ "$?" != "0" ]; then
+					fecho "cvs update failed - bailing"
+					exit 6
+				fi
+			fi
 
 			egrep "^C" "$cvslogfile" 2>&1 >/dev/null
 			if [ "$?" = "0" ]; then
@@ -398,16 +416,13 @@ failure=0
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
 	
-	pwithX=" without X"
 	if [ "$buildx" = "1" ]; then
 		xflags="-x -X $sourceroot/xsrc"
 		withX=" with X"
-		pwithX=" with X"
 	fi
 	
-	paramstring="${make_target}${pwithX}"
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$paramstring" $runlogdate
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$make_target" $buildx $runlogdate
 	
 	# Build each machine target
 	#
