@@ -30,12 +30,14 @@ my %param;
 my %hostos;
 my %hostmach;
 my %hostver;
+my %hostbuilddate;
 
 
 my %status;
 my %oldbuild;
 my %version;
 my %date;
+my %builddate;
 
 # Open the directory. There is a directory for each host
 #
@@ -71,7 +73,7 @@ HOST: while(my $host = readdir $dh) {
 	$hostos{$host} = $scoop{'hostos'} if $scoop{'hostos'};
 	$hostmach{$host} = $scoop{'hostmach'} if $scoop{'hostmach'};
 	$hostver{$host} = $scoop{'hostver'} if $scoop{'hostver'};		
-
+	$hostbuilddate{$host} = $scoop{'builddate'} if $scoop{'builddate'};		
 	if ($hostver{$host} =~ m/\-/) {
 		$hostver{$host} =~ s/\-.*$//;
 	}
@@ -106,10 +108,14 @@ HOST: while(my $host = readdir $dh) {
 		$status{$host}{$platform} = 'UNKNOWN';
 		$status{$host}{$platform} = $scoop{'status'} if $scoop{'status'};
 		$version{$host}{$platform} = $scoop{'version'} if $scoop{'version'};
+		$builddate{$host}{$platform} = $scoop{'builddate'} if $scoop{'builddate'};
 		$date{$host}{$platform} = $scoop{'date'} if $scoop{'date'};
 		$oldbuild{$host}{$platform} = 0;
 		$oldbuild{$host}{$platform} = 1	unless ($scoop{'version'} eq $target{$host});
-		
+
+		if ($hostbuilddate{$host} && $builddate{$host}{$platform}) {
+			$oldbuild{$host}{$platform} = 1	unless ($hostbuilddate{'host'} eq $builddate{$host}{$platform});
+		}		
 	}
 
 }
@@ -128,7 +134,6 @@ print OUT "<h1 align=\"center\">NetBSD cross-building status</h1>\n";
 
 print OUT "<table align=\"center\">";
 print OUT "<tr><td><b>Key</b></td>";
-print OUT "<td align=\"center\" bgcolor=\"$progcolor\">In Progress</td>";
 print OUT "<td align=\"center\" bgcolor=\"$okcolor\">Success</td>";
 print OUT "<td align=\"center\" bgcolor=\"$failcolor\">Failure</td>";
 print OUT "<td align=\"center\" bgcolor=\"$prokcolor\">Success<br>(previously)</td>";
@@ -136,8 +141,6 @@ print OUT "<td align=\"center\" bgcolor=\"$prfailcolor\">Failure<br>(previously)
 print OUT "<td align=\"center\" bgcolor=\"$progcolor\">In Progress</td>";
 print OUT "<td align=\"center\" bgcolor=\"$unknowncolor\">Unknown</td>";
 print OUT "</tr></table>";
-
-
 
 print OUT "<table align=\"center\">";
 # HEADINGS

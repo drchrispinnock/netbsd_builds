@@ -240,22 +240,24 @@ outputwebdetail() {
 		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
 		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
 		echo "param|$6" >> "$webresultsroot/$hostname/detail.txt"
+		echo "builddate|$7" >> "$webresultsroot/$hostname/detail.txt"
 		
 	fi
 	
 }
 
 webresult() {
-	# Expects 3 arguments: Machine, Status, Logfile
+	# Expects 3 arguments: Machine, Status, build date Logfile
 
 	if [ "$webresults" = "1" ]; then
 		
 		echo "status|$2" > "$webresultsroot/$hostname/build/$machine"
 		echo "version|$targetrelease" >> "$webresultsroot/$hostname/build/$machine"
+		echo "builddate|$3" >> "$webresultsroot/$hostname/build/$machine"
 		echo "date|`date +%d/%m/%Y`" >> "$webresultsroot/$hostname/build/$machine"
-		if [ "$3" != "" ]; then
-			cp "$3" "$webresultsroot/$hostname/logs/${machine}-full.txt"
-			tail -200 "$3" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
+		if [ "$4" != "" ]; then
+			cp "$4" "$webresultsroot/$hostname/logs/${machine}-full.txt"
+			tail -200 "$4" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
 		fi
 		
 		
@@ -405,7 +407,7 @@ failure=0
 	
 	paramstring="${make_target}${pwithX}"
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$paramstring"
+	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$paramstring" $runlogdate
 	
 	# Build each machine target
 	#
@@ -453,7 +455,7 @@ failure=0
 		decho "logging to $logfile"
 		decho "objects at $objdir"
 		touch $logfile
-		webresult $make_target "PROG" ""
+		webresult $make_target "PROG" $runlogdate ""
 
 		if [ "$cleandest_this" = "1" ]; then
 			decho "Cleaning $objdir/destdir for $machine"
@@ -482,10 +484,10 @@ failure=0
 				if [ "$?" != "0" ]; then
 					fecho "$make_target$withX FAILED FROM CLEAN"
 					failure=1
-					webresult $make_target "FAIL" "$logfile"
+					webresult $make_target "FAIL" $runlogdate "$logfile"
 				fi
 			else
-				webresult $make_target "FAIL" "$logfile" 
+				webresult $make_target "FAIL" $runlogdate "$logfile" 
 			fi
 
 		fi
@@ -509,7 +511,7 @@ failure=0
 			partial=""
 			[ "$previous" = "1" ] && partial=" (resumed)"
 			iecho "$make_target$withX completed in $duration$partial"
-			webresult $make_target "OK" "$logfile" 
+			webresult $make_target "OK" $runlogdate "$logfile" 
 			[ "$keeplogs" = "0" ] && rm -f "$logfile"
 			[ "$keeplogs" = "1" ] && gzip "$logfile"
 		fi
