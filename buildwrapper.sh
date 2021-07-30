@@ -89,6 +89,7 @@ updateflag="-u"
 #
 cleandest="0"
 cleanobj="0"
+cleanafter="0"
 
 # Retry on fail
 #
@@ -137,9 +138,10 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -r  retry build with empty object directory if failure
   -e  erase destdir before builds
   -E  erase objects before builds
-	-w webroot  build web results into the specified directory
-	-W  don't output web results
-	-y webroottarget  copy the web results to a server via SSH
+  -F  erase objects after builds (e.g. short disc space)
+  -w webroot  build web results into the specified directory
+  -W  don't output web results
+  -y webroottarget  copy the web results to a server via SSH
   targets given on the command line override -A and defaults
 "
 
@@ -180,6 +182,7 @@ while [ $# -gt 0 ]; do
 #
         -e)	cleandest="1"; ;;
         -E)	cleanobj="1"; ;;
+	-F)	cleanafter="1"; ;;
 
 # No web results
 				-W) webresults=0; ;;
@@ -531,6 +534,10 @@ failure=0
 
 		rm -f $statefile
 		previous=0
+		if [ "$cleanafter" = "1" ]; then
+			decho "Cleaning objects post-build for $machine"
+			rm -rf "$objdir"
+		fi
 		
 		
 	done
