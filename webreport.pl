@@ -15,6 +15,7 @@ use warnings;
 my $webresultsroot="/buildres"; 
 
 # Colours
+
 my $unknowncolor = "#B2BEB5"; # Ash grey
 my $okcolor = "#00ff00";
 my $failcolor = "#ff0000";
@@ -202,7 +203,7 @@ foreach my $platform (@Platforms) {
 
 				if ($oldbuild{$host}{$platform}) {
 					$color = $prokcolor if $status{$host}{$platform} eq 'OK'; 
-					$color = "$prfailcolor" if $status{$host}{$platform} eq 'FAIL';
+					$color = $prfailcolor if $status{$host}{$platform} eq 'FAIL';
 				}
 				
 				$date = $date{$host}{$platform} if ($date{$host}{$platform} &&
