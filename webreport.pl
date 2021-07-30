@@ -115,7 +115,7 @@ HOST: while(my $host = readdir $dh) {
 		$oldbuild{$host}{$platform} = 1	unless ($scoop{'version'} eq $target{$host});
 
 		if ($hostbuilddate{$host} && $builddate{$host}{$platform}) {
-			$oldbuild{$host}{$platform} = 1	unless ($hostbuilddate{'host'} eq $builddate{$host}{$platform});
+			$oldbuild{$host}{$platform} = 1	unless ($hostbuilddate{$host} eq $builddate{$host}{$platform});
 		}		
 	}
 
