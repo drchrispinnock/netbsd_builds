@@ -14,6 +14,15 @@ use warnings;
 
 my $webresultsroot="/buildres"; 
 
+# Colours
+
+my $unknowncolor = "#B2BEB5"; # Ash grey
+my $okcolor = "#00ff00";
+my $failcolor = "#ff0000";
+my $progcolor = "#DDFF33";
+my $prokcolor = "#19FFFF";
+my $prfailcolor = "#FFB319";
+
 my @Hosts;
 my %Platforms;
 
@@ -22,11 +31,14 @@ my %param;
 my %hostos;
 my %hostmach;
 my %hostver;
+my %hostbuilddate;
 
 
 my %status;
+my %oldbuild;
 my %version;
 my %date;
+my %builddate;
 
 # Open the directory. There is a directory for each host
 #
@@ -62,7 +74,7 @@ HOST: while(my $host = readdir $dh) {
 	$hostos{$host} = $scoop{'hostos'} if $scoop{'hostos'};
 	$hostmach{$host} = $scoop{'hostmach'} if $scoop{'hostmach'};
 	$hostver{$host} = $scoop{'hostver'} if $scoop{'hostver'};		
-
+	$hostbuilddate{$host} = $scoop{'builddate'} if $scoop{'builddate'};		
 	if ($hostver{$host} =~ m/\-/) {
 		$hostver{$host} =~ s/\-.*$//;
 	}
@@ -95,12 +107,16 @@ HOST: while(my $host = readdir $dh) {
 		#
 		
 		$status{$host}{$platform} = 'UNKNOWN';
-		if ($scoop{'version'} eq $target{$host}) {
-				$status{$host}{$platform} = $scoop{'status'} if $scoop{'status'};
-				$version{$host}{$platform} = $scoop{'version'} if $scoop{'version'};
-				$date{$host}{$platform} = $scoop{'date'} if $scoop{'date'};
-		}
-		
+		$status{$host}{$platform} = $scoop{'status'} if $scoop{'status'};
+		$version{$host}{$platform} = $scoop{'version'} if $scoop{'version'};
+		$builddate{$host}{$platform} = $scoop{'builddate'} if $scoop{'builddate'};
+		$date{$host}{$platform} = $scoop{'date'} if $scoop{'date'};
+		$oldbuild{$host}{$platform} = 0;
+		$oldbuild{$host}{$platform} = 1	unless ($scoop{'version'} eq $target{$host});
+
+		if ($hostbuilddate{$host} && $builddate{$host}{$platform}) {
+			$oldbuild{$host}{$platform} = 1	unless ($hostbuilddate{'host'} eq $builddate{$host}{$platform});
+		}		
 	}
 
 }
@@ -114,6 +130,18 @@ open OUT, ">$webresultsroot/index.html.new";
 
 print OUT "<html>";
 print OUT "<head><meta http-equiv=\"refresh\" content=\"600\"></head><body>";
+
+print OUT "<h1 align=\"center\">NetBSD cross-building status</h1>\n";
+
+print OUT "<table align=\"center\">";
+print OUT "<tr><td><b>Key</b></td>";
+print OUT "<td align=\"center\" bgcolor=\"$okcolor\">Success</td>";
+print OUT "<td align=\"center\" bgcolor=\"$failcolor\">Failure</td>";
+print OUT "<td align=\"center\" bgcolor=\"$prokcolor\">Success<br>(previously)</td>";
+print OUT "<td align=\"center\" bgcolor=\"$prfailcolor\">Failure<br>(previously)</td>";
+print OUT "<td align=\"center\" bgcolor=\"$progcolor\">In Progress</td>";
+print OUT "<td align=\"center\" bgcolor=\"$unknowncolor\">Unknown</td>";
+print OUT "</tr></table>";
 
 print OUT "<table align=\"center\">";
 # HEADINGS
@@ -164,14 +192,19 @@ foreach my $platform (@Platforms) {
 			my $color;
 			
 			# Defaults
-			$color = "#B2BEB5"; # Ash grey
+			$color = $unknowncolor; # Ash grey
 			$date = "";
 			
 			if (defined($status{$host}{$platform})) {
 				
-				$color = "#00ff00" if $status{$host}{$platform} eq 'OK';
-				$color = "#ff0000" if $status{$host}{$platform} eq 'FAIL';
-				$color = "#DDFF33" if $status{$host}{$platform} eq 'PROG';
+				$color = $okcolor if $status{$host}{$platform} eq 'OK';
+				$color = $failcolor if $status{$host}{$platform} eq 'FAIL';
+				$color = $progcolor if $status{$host}{$platform} eq 'PROG';
+
+				if ($oldbuild{$host}{$platform}) {
+					$color = $prokcolor if $status{$host}{$platform} eq 'OK'; 
+					$color = $prfailcolor if $status{$host}{$platform} eq 'FAIL';
+				}
 				
 				$date = $date{$host}{$platform} if ($date{$host}{$platform} &&
 												$status{$host}{$platform} ne 'PROG');
