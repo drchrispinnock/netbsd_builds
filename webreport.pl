@@ -47,6 +47,7 @@ opendir my $dh, "$webresultsroot" or die "Cannot open results directory\n";
 HOST: while(my $host = readdir $dh) {
 	next HOST if ($host eq '.' || $host eq '..');
 	next HOST unless ( -d "$webresultsroot/$host" );
+	next HOST if ( $host eq "old" ); # Archive
   
 	# Get the host details
 	#
