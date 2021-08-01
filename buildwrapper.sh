@@ -264,8 +264,8 @@ webresult() {
 		echo "builddate|$3" >> "$webresultsroot/$hostname/build/$machine"
 		echo "date|`date +%d/%m/%Y`" >> "$webresultsroot/$hostname/build/$machine"
 		if [ "$4" != "" ]; then
-			cp "$4" "$webresultsroot/$hostname/logs/${machine}-full.txt"
-			tail -200 "$4" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
+#			cp "$4" "$webresultsroot/$hostname/logs/${machine}-full.txt"
+			tail -500 "$4" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
 		fi
 		
 		
