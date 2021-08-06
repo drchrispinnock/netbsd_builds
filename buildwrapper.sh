@@ -263,6 +263,10 @@ webresult() {
 		echo "version|$targetrelease" >> "$webresultsroot/$hostname/build/$machine"
 		echo "builddate|$3" >> "$webresultsroot/$hostname/build/$machine"
 		echo "date|`date +%d/%m/%Y`" >> "$webresultsroot/$hostname/build/$machine"
+
+		# Remove old logs
+		rm -f $webresultsroot/$hostname/logs/${machine}-full.txt
+		rm -f $webresultsroot/$hostname/logs/${machine}-tail.txt
 		if [ "$4" != "" ]; then
 #			cp "$4" "$webresultsroot/$hostname/logs/${machine}-full.txt"
 			tail -500 "$4" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
