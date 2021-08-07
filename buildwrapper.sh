@@ -254,6 +254,16 @@ outputwebdetail() {
 	
 }
 
+outputwebcvs() {
+# $cvsdate
+	if [ "$webresults" = "1" ]; then
+		mkdir -p "$webresultsroot/$hostname"
+                mkdir -p "$webresultsroot/$hostname/build"
+                mkdir -p "$webresultsroot/$hostname/logs"
+		echo "$1" > "$webresultsroot/$hostname/cvsdate.txt"
+	fi
+}
+
 webresult() {
 	# Expects 3 arguments: Machine, Status, build date Logfile
 
@@ -367,9 +377,12 @@ failure=0
 	
 		# Update from CVS
 		#
-		cvslogfile="$runlogdir/`date +%Y%m%d%H%M`-cvsupdate.txt"
+		cvsdate=`date +%Y%m%d%H%M`
+		cvslogfile="$runlogdir/$cvsdate-cvsupdate.txt"
 
 		if [ "$updatecvs" != "0" ]; then
+
+			outputwebcvs $cvsdate
 			iecho "Updating src from cvs..."
 			[ "$quiet" = "0" ] && tail -f $cvslogfile &
 			cvs -q up -dP >> "$cvslogfile" 2>&1
