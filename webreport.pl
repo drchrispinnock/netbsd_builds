@@ -21,6 +21,7 @@ my $okcolor = "#00ff00";
 my $failcolor = "#ff0000";
 my $progcolor = "#DDFF33";
 my $prokcolor = "#19FFFF";
+$prokcolor = $okcolor;
 my $prfailcolor = "#FFB319";
 
 my @Hosts;
@@ -32,7 +33,7 @@ my %hostos;
 my %hostmach;
 my %hostver;
 my %hostbuilddate;
-
+my %hostcvs;
 
 my %status;
 my %oldbuild;
@@ -66,6 +67,15 @@ HOST: while(my $host = readdir $dh) {
 		$scoop{$a[0]} = $a[1];
 	}
 	close FILE;
+
+		
+	if(open FILE, "$webresultsroot/$host/cvsdate.txt") {
+		while(<FILE>) {
+			chomp;
+			$hostcvs{$host}	= $_;
+		}
+		close FILE;
+	}
 	
 	# Should really check that these are all set, but...
 	#
@@ -113,8 +123,10 @@ HOST: while(my $host = readdir $dh) {
 		$builddate{$host}{$platform} = $scoop{'builddate'} if $scoop{'builddate'};
 		$date{$host}{$platform} = $scoop{'date'} if $scoop{'date'};
 		$oldbuild{$host}{$platform} = 0;
-		$oldbuild{$host}{$platform} = 1	unless ($scoop{'version'} eq $target{$host});
-
+		
+		if ($scoop{'version'}) {
+			$oldbuild{$host}{$platform} = 1	unless ($scoop{'version'} eq $target{$host});
+		}
 		if ($hostbuilddate{$host} && $builddate{$host}{$platform}) {
 			$oldbuild{$host}{$platform} = 1	unless ($hostbuilddate{$host} eq $builddate{$host}{$platform});
 		}		
@@ -130,15 +142,16 @@ my $_td="td align=\"center\"";
 open OUT, ">$webresultsroot/index.html.new";
 
 print OUT "<html>";
-print OUT "<head><meta http-equiv=\"refresh\" content=\"600\"></head><body>";
-
+print OUT "<head><meta http-equiv=\"refresh\" content=\"600\">";
+print OUT "<link rel=\"shortcut icon\" href=\"./favicon.ico\" type=\"image/x-icon\">";
+print OUT "</head><body>";
 print OUT "<h1 align=\"center\">NetBSD cross-building status</h1>\n";
 
 print OUT "<table align=\"center\">";
 print OUT "<tr><td><b>Key</b></td>";
 print OUT "<td align=\"center\" bgcolor=\"$okcolor\">Success</td>";
 print OUT "<td align=\"center\" bgcolor=\"$failcolor\">Failure</td>";
-print OUT "<td align=\"center\" bgcolor=\"$prokcolor\">Success<br>(previously)</td>";
+print OUT "<td align=\"center\" bgcolor=\"$prokcolor\">Success<br>(previously)</td>" if ($okcolor ne $prokcolor);
 print OUT "<td align=\"center\" bgcolor=\"$prfailcolor\">Failure<br>(previously)</td>";
 print OUT "<td align=\"center\" bgcolor=\"$progcolor\">In Progress</td>";
 print OUT "<td align=\"center\" bgcolor=\"$unknowncolor\">Unknown</td>";
@@ -176,6 +189,14 @@ print OUT "</tr>\n";
 print OUT "<tr><td></td>";
 foreach my $host (@Hosts) {
 	print OUT "<$_td>$param{$host}</td>";
+}
+print OUT "</tr>\n";
+
+print OUT "<tr><td><em>CVS date</em></td>";
+foreach my $host (@Hosts) {
+	my $ot = "";
+	$ot = $hostcvs{$host} if $hostcvs{$host};
+	print OUT "<$_td>$ot</td>";
 }
 print OUT "</tr>\n";
 
