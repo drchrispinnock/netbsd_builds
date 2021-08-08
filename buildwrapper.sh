@@ -385,6 +385,9 @@ failure=0
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
 
+	# Clean up in progress web reports
+	cleanwebip;
+
 	if [ "$previous" = "1" ]; then
 		iecho "Detected state. Attempting to start from $state"
 	else
