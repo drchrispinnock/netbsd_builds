@@ -258,10 +258,20 @@ outputwebcvs() {
 # $cvsdate
 	if [ "$webresults" = "1" ]; then
 		mkdir -p "$webresultsroot/$hostname"
-                mkdir -p "$webresultsroot/$hostname/build"
-                mkdir -p "$webresultsroot/$hostname/logs"
+    mkdir -p "$webresultsroot/$hostname/build"
+    mkdir -p "$webresultsroot/$hostname/logs"
 		echo "$1" > "$webresultsroot/$hostname/cvsdate.txt"
 	fi
+}
+
+cleanwebip() {
+	# clean up the in progress files
+	if [ -d "$webresultsroot/$hostname/build" ]; then
+		cleanlist=`grep -l 'status|PROG' "$webresultsroot/$hostname"/build/*`
+		for f in $cleanlist; do
+			rm -f $f
+		done
+fi
 }
 
 webresult() {
@@ -374,6 +384,9 @@ failure=0
 	iecho "Starting $make_target"
 	iecho "Targets: $targets"
 	iecho "Failures logged to $faillogfile"
+
+	# Clean up in progress web reports
+	cleanwebip;
 
 	if [ "$previous" = "1" ]; then
 		iecho "Detected state. Attempting to start from $state"
