@@ -1,0 +1,98 @@
+# Tier 1
+amd64 
+i386 
+sparc64 
+evbppc 
+hpcarm 
+evbmips64-eb 
+evbmips64-el 
+evbmips-eb 
+evbmips-el
+
+# Tier 1 - All EVBArm combinations
+evbarmv4-eb 
+evbarmv4-el 
+evbarmv5-eb 
+evbarmv5-el 
+evbarmv5hf-eb 
+evbarmv5hf-el 
+evbarmv6-eb 
+evbarmv6-el 
+evbarmv6hf-eb 
+evbarmv6hf-el 
+evbarmv7-eb 
+evbarmv7-el 
+evbarmv7hf-eb 
+evbarmv7hf-el 
+evbarm64-eb
+evbarm64-el 
+
+# Tier 2 - Organic
+acorn32
+algor 
+alpha 
+amiga
+amigappc 
+arc 
+atari 
+bebox 
+cats 
+cesfic 
+cobalt 
+dreamcast 
+epoc32 
+emips 
+evbsh3-eb 
+evbsh3-el 
+ews4800mips 
+hp300 
+hppa 
+hpcmips 
+hpcsh 
+ibmnws 
+iyonix 
+landisk 
+luna68k 
+mac68k 
+macppc 
+mipsco 
+mmeye 
+mvme68k 
+mvmeppc 
+netwinder 
+news68k 
+newsmips 
+next68k 
+ofppc 
+pmax 
+prep 
+rs6000
+sandpoint 
+sbmips-eb 
+sbmips-el 
+sbmips64-eb
+sbmips64-el 
+sgimips 
+shark 
+sparc 
+sun2 
+sun3 
+vax 
+x68k 
+zaurus
+
+# Other
+macppc64 
+ia64
+iscv
+
+ Tier 2/Organic platforms
+ acorn32 algor alpha amiga amigappc arc atari bebox cats cesfic coba    lt dreamcast epoc32 emips evbsh3-eb evbsh3-el ews4800mips hp300 hppa hpcmips     hpcsh ibmnws iyonix landisk luna68k mac68k macppc mipsco mmeye mvme68k mvme    ppc netwinder news68k newsmips next68k ofppc pmax prep rs6000 sandpoint sbmi    ps-eb sbmips-el sbmips64-eb sbmips64-el sgimips shark sparc sun2 sun3 vax x6    8k zaurus
+ 51 
+ 52 # Others
+ 53 #
+ 54 other="macppc64 ia64 riscv"
+ 55 
+ 56 # All targets
+ 57 #
+ 58 alltargets="$supported $evbarm $organic $other"
