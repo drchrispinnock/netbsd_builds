@@ -20,8 +20,7 @@ my $unknowncolor = "#B2BEB5"; # Ash grey
 my $okcolor = "#00ff00";
 my $failcolor = "#ff0000";
 my $progcolor = "#DDFF33";
-my $prokcolor = "#19FFFF";
-$prokcolor = $okcolor;
+my $prokcolor = "#E5FFCC";
 my $prfailcolor = "#FFB319";
 
 my @Hosts;
