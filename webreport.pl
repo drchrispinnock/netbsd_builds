@@ -20,8 +20,7 @@ my $unknowncolor = "#B2BEB5"; # Ash grey
 my $okcolor = "#00ff00";
 my $failcolor = "#ff0000";
 my $progcolor = "#DDFF33";
-my $prokcolor = "#19FFFF";
-$prokcolor = $okcolor;
+my $prokcolor = "#E5FFCC";
 my $prfailcolor = "#FFB319";
 
 my @Hosts;
@@ -232,7 +231,7 @@ foreach my $platform (@Platforms) {
 												$status{$host}{$platform} ne 'PROG');
 				
 				$date = "<em>Building</em>" if ($status{$host}{$platform} eq 'PROG');
-				$link = "$host/logs/$platform-tail.txt" if $status{$host}{$platform} eq 'FAIL';
+				$link = "/$host/logs/$platform-tail.txt" if $status{$host}{$platform} eq 'FAIL';
 			}
 			
 			print OUT "<td align=\"center\" bgcolor=\"$color\">";
