@@ -26,6 +26,7 @@ hostname=`hostname -s | tr "[:upper:]" "[:lower:]"`
 os=`uname -s`
 hostmach=`uname -m`
 osres=`uname -r`
+webresultshostname=$hostname
 
 # Don't remove the state (default) - the state allows the script
 # to pick up from where it left off, sort of.
@@ -141,6 +142,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -F  erase objects after builds (e.g. short disc space)
   -w webroot  build web results into the specified directory
   -W  don't output web results
+  -H hostid use a different name for outputting results
   -y webroottarget  copy the web results to a server via SSH
   targets given on the command line override -A and defaults
 "
@@ -184,12 +186,15 @@ while [ $# -gt 0 ]; do
         -E)	cleanobj="1"; ;;
 	-F)	cleanafter="1"; ;;
 
-# No web results
+# Web results
+				-H) webresultshostname="$2"; shift; ;;
 				-W) webresults=0; ;;
 				-w) webresultsroot="$2"; shift; webresults=1; ;;
 				-y) copywebresultsroot="$2"; shift; 
 						webresultsroot="$sourceroot/buildres"; 
 						copywebresults=1; ;;
+
+
 
 # Help!
         -h|--help)	echo "$USAGE"; exit ;;
@@ -199,6 +204,10 @@ while [ $# -gt 0 ]; do
 	esac
 	shift
 done
+
+# Web results directory
+#
+webresultstarget="$webresultsroot/$webresultshostname"
 
 # Make the log directory
 #
@@ -228,28 +237,31 @@ export RELEASEDIR="$sourceroot/releases"
 #date_format="%Y%m%d%H%M"
 date_format="%d/%m/%Y %H:%M"
 
+makewebresultsdir() {
+	mkdir -p "$webresultstarget/build"
+	mkdir -p "$webresultstarget/logs"
+}
+
 outputwebdetail() {
-	# $targetrelease $hostname $os $hostmach $osres $maketarget $withX
+	# $targetrelease $os $hostmach $osres $maketarget $withX
 	#
-	param="$6 without X"
-	if [ "$7" = "1" ]; then
-		param="$6 with X"
+	param="$5 without X"
+	if [ "$6" = "1" ]; then
+		param="$5 with X"
 	fi
 	
 	if [ "$webresults" = "1" ]; then
-		mkdir -p "$webresultsroot/$hostname"
-		mkdir -p "$webresultsroot/$hostname/build"
-		mkdir -p "$webresultsroot/$hostname/logs"
 		
-		echo "target|$1" > "$webresultsroot/$hostname/detail.txt"
-		echo "hostname|$2" >> "$webresultsroot/$hostname/detail.txt"
-		echo "hostos|$3" >> "$webresultsroot/$hostname/detail.txt"
-		echo "hostmach|$4" >> "$webresultsroot/$hostname/detail.txt"
-		echo "hostver|$5" >> "$webresultsroot/$hostname/detail.txt"
-		echo "builddate|$8" >> "$webresultsroot/$hostname/detail.txt"
-		echo "param|$param" >> "$webresultsroot/$hostname/detail.txt"
-		echo "maketarget|$6" >> "$webresultsroot/$hostname/detail.txt"
-		echo "withX|$7" >> "$webresultsroot/$hostname/detail.txt"
+		makewebresultsdir
+		echo "target|$1" > "$webresultstarget/detail.txt"
+		echo "hostname|$hostname" >> "$webresultstarget/detail.txt"
+		echo "hostos|$2" >> "$webresultstarget/detail.txt"
+		echo "hostmach|$3" >> "$webresultstarget/detail.txt"
+		echo "hostver|$4" >> "$webresultstarget/detail.txt"
+		echo "builddate|$7" >> "$webresultstarget/detail.txt"
+		echo "param|$param" >> "$webresultstarget/detail.txt"
+		echo "maketarget|$5" >> "$webresultstarget/detail.txt"
+		echo "withX|$6" >> "$webresultstarget/detail.txt"
 	fi
 	
 }
@@ -257,17 +269,15 @@ outputwebdetail() {
 outputwebcvs() {
 # $cvsdate
 	if [ "$webresults" = "1" ]; then
-		mkdir -p "$webresultsroot/$hostname"
-    mkdir -p "$webresultsroot/$hostname/build"
-    mkdir -p "$webresultsroot/$hostname/logs"
-		echo "$1" > "$webresultsroot/$hostname/cvsdate.txt"
+		makewebresultsdir
+		echo "$1" > "$webresultstarget/cvsdate.txt"
 	fi
 }
 
 cleanwebip() {
 	# clean up the in progress files
-	if [ -d "$webresultsroot/$hostname/build" ]; then
-		cleanlist=`grep -l 'status|PROG' "$webresultsroot/$hostname"/build/*`
+	if [ -d "$webresultstarget/build" ]; then
+		cleanlist=`grep -l 'status|PROG' "$webresultstarget"/build/*`
 		for f in $cleanlist; do
 			rm -f $f
 		done
@@ -279,22 +289,22 @@ webresult() {
 
 	if [ "$webresults" = "1" ]; then
 		
-		echo "status|$2" > "$webresultsroot/$hostname/build/$machine"
-		echo "version|$targetrelease" >> "$webresultsroot/$hostname/build/$machine"
-		echo "builddate|$3" >> "$webresultsroot/$hostname/build/$machine"
-		echo "date|`date +%d/%m/%Y`" >> "$webresultsroot/$hostname/build/$machine"
+		echo "status|$2" > "$webresultstarget/build/$machine"
+		echo "version|$targetrelease" >> "$webresultstarget/build/$machine"
+		echo "builddate|$3" >> "$webresultstarget/build/$machine"
+		echo "date|`date +%d/%m/%Y`" >> "$webresultstarget/build/$machine"
 
 		# Remove old logs
-		rm -f $webresultsroot/$hostname/logs/${machine}-full.txt
-		rm -f $webresultsroot/$hostname/logs/${machine}-tail.txt
+		rm -f $webresultstarget/logs/${machine}-full.txt
+		rm -f $webresultstarget/logs/${machine}-tail.txt
 		if [ "$4" != "" ]; then
-#			cp "$4" "$webresultsroot/$hostname/logs/${machine}-full.txt"
-			tail -500 "$4" > "$webresultsroot/$hostname/logs/${machine}-tail.txt"
+#			cp "$4" "$webresultstarget/logs/${machine}-full.txt"
+			tail -500 "$4" > "$webresultstarget/logs/${machine}-tail.txt"
 		fi
 		
 		
 		if [ "$copywebresults" = "1" ]; then
-			scp -rq $webresultsroot/$hostname $copywebresultsroot
+			scp -rq $webresultstarget $copywebresultsroot
 		fi
 	fi
 
@@ -455,7 +465,7 @@ failure=0
 	fi
 	
 	
-	outputwebdetail $targetrelease $hostname $os $hostmach $osres "$make_target" $buildx $runlogdate
+	outputwebdetail $targetrelease $os $hostmach $osres "$make_target" $buildx $runlogdate
 	
 	# Build each machine target
 	#
@@ -482,8 +492,7 @@ failure=0
 		fi
 
 		echo "$machine" > $statefile
-		
-		
+			
 
 		# Machine exceptions
 		#
