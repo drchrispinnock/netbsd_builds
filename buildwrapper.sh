@@ -14,6 +14,7 @@ targets="$mypref" # Default
 #
 webresultsroot="/buildres"
 webresults=1
+branch=""
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
 #
@@ -140,10 +141,13 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
   -e  erase destdir before builds
   -E  erase objects before builds
   -F  erase objects after builds (e.g. short disc space)
-  -w webroot  build web results into the specified directory
-  -W  don't output web results
-  -H hostid use a different name for outputting results
-  -y webroottarget  copy the web results to a server via SSH
+	
+Web reporting options:
+  -W don't output web results
+  -w webroot - build web results into the specified directory
+	-b branch - display the branch ID instead of the CVS date
+  -H hostid - use a different hostname for segregating & outputting results
+  -y webroottarget - copy the web results to a server via SSH
   targets given on the command line override -A and defaults
 "
 
@@ -187,6 +191,7 @@ while [ $# -gt 0 ]; do
 	-F)	cleanafter="1"; ;;
 
 # Web results
+				-b) branch="$2"; shift; ;;
 				-H) webresultshostname="$2"; shift; ;;
 				-W) webresults=0; ;;
 				-w) webresultsroot="$2"; shift; webresults=1; ;;
@@ -407,6 +412,7 @@ failure=0
 		cvsdate=`date +%Y%m%d%H%M`
 		cvslogfile="$runlogdir/$cvsdate-cvsupdate.txt"
 
+		
 		if [ "$updatecvs" != "0" ]; then
 
 			outputwebcvs $cvsdate
@@ -455,6 +461,7 @@ failure=0
 
 		fi
 	fi
+	[ "$branch" != "" ] && outputwebcvs $branch
 	
 	targetrelease=`sh sys/conf/osrelease.sh`	# May change between builds
 	iecho "Building NetBSD $targetrelease on $hostname ($os/$hostmach/$osres)"
