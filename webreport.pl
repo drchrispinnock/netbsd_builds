@@ -33,6 +33,7 @@ my %hostmach;
 my %hostver;
 my %hostbuilddate;
 my %hostcvs;
+my %realhost;
 
 my %status;
 my %oldbuild;
@@ -78,9 +79,12 @@ HOST: while(my $host = readdir $dh) {
 	
 	# Should really check that these are all set, but...
 	#
+	$realhost{$host} = $host; # may be overridden
+	
 	$param{$host} = "";
 	$target{$host} = $scoop{'target'} if $scoop{'target'};
 	$param{$host} = $scoop{'param'} if $scoop{'param'};
+	$realhost{$host} = $scoop{'hostname'} if $scoop{'hostname'}; 
 	$hostos{$host} = $scoop{'hostos'} if $scoop{'hostos'};
 	$hostmach{$host} = $scoop{'hostmach'} if $scoop{'hostmach'};
 	$hostver{$host} = $scoop{'hostver'} if $scoop{'hostver'};		
@@ -161,7 +165,7 @@ print OUT "<table align=\"center\">";
 #
 print OUT "<tr><$_td></td>";
 foreach my $host (@Hosts) {
-	print OUT "<$_td>$host</td>";
+	print OUT "<$_td>$realhost{$host}</td>";
 }
 print OUT "</tr>\n";
 
