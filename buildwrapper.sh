@@ -309,7 +309,7 @@ webresult() {
 		
 		
 		if [ "$copywebresults" = "1" ]; then
-			scp -rq $webresultstarget $copywebresultsroot
+			rsync -aqz -e "ssh -q" --delete "$webresultstarget" "$copywebresultsroot/" 
 		fi
 	fi
 

@@ -1,0 +1,40 @@
+NetBSD 1.4.1 (GENERIC) #1: Tue Aug 10 00:03:09 MEST 1999
+    fvdl@struis:/usr/src/sys/arch/i386/compile/GENERIC
+cpu0: family 4 model 3 step 5
+cpu0: Intel 486DX2 (486-class)
+real mem  = 16384000
+avail mem = 11661312
+using 225 buffers containing 921600 bytes of memory
+mainbus0 (root)
+isa0 at mainbus0
+ep0 at isa0 port 0x310-0x31f irq 10: 3Com 3C509 Ethernet
+ep0: address 00:20:af:bb:bc:11, 8KB byte-wide FIFO, 5:3 Rx:Tx split
+ep0: 10baseT, 10base5 (default 10baseT)
+com0 at isa0 port 0x3f8-0x3ff irq 4: ns16550a, working fifo
+com1 at isa0 port 0x2f8-0x2ff irq 3: ns16550a, working fifo
+wdc0 at isa0 port 0x1f0-0x1f7 irq 14
+wd0 at wdc0 channel 0 drive 0: <QUANTUM FIREBALL1280A>
+wd0: drive supports 8-sector pio transfers, lba addressing
+wd0: 1222MB, 2484 cyl, 16 head, 63 sec, 512 bytes/sect x 2503872 sectors
+wd0: drive supports PIO mode 4, DMA mode 2
+vga0 at isa0 port 0x3b0-0x3df iomem 0xa0000-0xbffff
+wsdisplay0 at vga0: console (80x25, vt100 emulation)
+lpt0 at isa0 port 0x378-0x37b irq 7
+pckbc0 at isa0 port 0x60-0x64
+pckbd0 at pckbc0 (kbd slot)
+pckbc0: using irq 1 for kbd slot
+wskbd0 at pckbd0: console keyboard
+opmsprobe: command error
+pcppi0 at isa0 port 0x61
+midi0 at pcppi0: <PC speaker>
+sysbeep0 at pcppi0
+isapnp0 at isa0 port 0x279: ISA Plug 'n Play device support
+npx0 at isa0 port 0xf0-0xff: using exception 16
+fdc0 at isa0 port 0x3f0-0x3f7 irq 6 drq 2
+fd0 at fdc0 drive 0: 1.44MB, 80 cyl, 2 head, 18 sec
+isapnp0: no ISA Plug 'n Play devices found
+biomask 4040 netmask 4440 ttymask 44c2
+wscons: wskbd0 glued to wsdisplay0 (console)
+boot device: wd0
+root on wd0a dumps on wd0b
+root file system type: ffs
