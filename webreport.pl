@@ -26,7 +26,7 @@ my $prfailcolor = "#FFB319";
 my @Hosts;
 my %Platforms;
 
-
+my $sort_by_results = 1;
 my $usetiers = 1; # 0 and it sorts alphabetically
 my @tier1 = qw(amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbmips64-el evbmips-eb evbmips-el evbarmv4-el evbarmv4-eb evbarmv5-el evbarmv5hf-el evbarmv5-eb evbarmv5hf-eb evbarmv6-el evbarmv6hf-el evbarmv6-eb evbarmv6hf-eb evbarmv7-el evbarmv7-eb evbarmv7hf-el evbarmv7hf-eb evbarm64-el evbarm64-eb);
 
@@ -151,6 +151,32 @@ my @Platforms = sort(keys(%Platforms));
 @Platforms = @TieredPlatforms if $usetiers;
 
 @Hosts = sort(@Hosts);
+
+# Sort
+if ($sort_by_results) {
+	my @frst; # All builds and current
+	my @sec;
+	my @last;
+	foreach my $pl (@Platforms) {
+
+		my $first = 1;
+		my $second = 1;
+		foreach my $ht (@Hosts) {
+
+			$first = 0 unless (defined($status{$ht}{$pl}));
+			$first = 0 if ($oldbuild{$ht}{$pl});
+
+			$second = 0 unless (defined($status{$ht}{$pl}));
+			$second = 0 unless (defined($oldbuild{$ht}{$pl}));
+		}
+		$second = 0 if $first;
+#		print "$pl : $first $second\n";
+		push @frst, $pl if $first;
+		push @sec, $pl if $second;
+		push @last, $pl if ($first == 0 && $second == 0);
+	}
+	@Platforms = (@frst, @sec, @last);
+}
 
 my $_td="td align=\"center\"";
 
