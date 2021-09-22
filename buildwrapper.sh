@@ -7,7 +7,7 @@
 
 # My preferred targets
 #
-mypref="amd64 sparc64 evbppc evbmips64-eb macppc riscv"
+mypref="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbarmv4-el evbarmv5-el evbarmv6-el macppc riscv"
 targets="$mypref" # Default
 
 # Directory for outputting results files for a web interface
@@ -300,10 +300,12 @@ webresult() {
 		echo "date|`date +%d/%m/%Y`" >> "$webresultstarget/build/$machine"
 
 		# Remove old logs
+		#
 		rm -f $webresultstarget/logs/${machine}-full.txt
 		rm -f $webresultstarget/logs/${machine}-tail.txt
+		
 		if [ "$4" != "" ]; then
-#			cp "$4" "$webresultstarget/logs/${machine}-full.txt"
+			#			cp "$4" "$webresultstarget/logs/${machine}-full.txt"
 			tail -500 "$4" > "$webresultstarget/logs/${machine}-tail.txt"
 		fi
 		
@@ -382,7 +384,7 @@ firstrun=1
 
 while [ 1 = 1 ]; do
 
-failure=0
+	failure=0
 	runlogdate=`date +%Y%m%d%H%M`
 	runlogdir="$logdir/$runlogdate"
 	mkdir -p $runlogdir
@@ -470,8 +472,7 @@ failure=0
 		xflags="-x -X $sourceroot/xsrc"
 		withX=" with X"
 	fi
-	
-	
+		
 	outputwebdetail $targetrelease $os $hostmach $osres "$make_target" $buildx $runlogdate
 	
 	# Build each machine target
