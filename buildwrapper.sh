@@ -251,10 +251,10 @@ outputwebdetail() {
 	# $targetrelease $os $hostmach $osres $maketarget $withX
 	#
 	outputthefile=0
-	[ "$webresults" = "1" ] && $outputthefile = 1;
-	[ "$previous" = "0" ] && $outputthefile = 1;
-	[ ! -f "$webresultstarget/detail.txt" ] && $outputthefile = 1;
-	[ "$webresults" = "0" ] && $outputthefile = 0;
+	[ "$webresults" = "1" ] && outputthefile=1;
+	[ "$previous" = "0" ] && outputthefile=1;
+	[ ! -f "$webresultstarget/detail.txt" ] && outputthefile=1;
+	[ "$webresults" = "0" ] && outputthefile=0;
 
 	param="$5 without X"
 	if [ "$6" = "1" ]; then
