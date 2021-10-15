@@ -250,6 +250,12 @@ makewebresultsdir() {
 outputwebdetail() {
 	# $targetrelease $os $hostmach $osres $maketarget $withX
 	#
+	outputthefile=0
+	[ "$webresults" = "1" ] && $outputthefile = 1;
+	[ "$previous" = "0" ] && $outputthefile = 1;
+	[ ! -f "$webresultstarget/detail.txt" ] && $outputthefile = 1;
+	[ "$webresults" = "0" ] && $outputthefile = 0;
+
 	param="$5 without X"
 	if [ "$6" = "1" ]; then
 		param="$5 with X"
@@ -380,7 +386,7 @@ if [ -f "$statefile" ]; then
 	previous=1
 fi
 
-firstrun=1
+firstrun=1 # used for CVS checks
 
 while [ 1 = 1 ]; do
 
@@ -472,9 +478,9 @@ while [ 1 = 1 ]; do
 		xflags="-x -X $sourceroot/xsrc"
 		withX=" with X"
 	fi
-		
-	outputwebdetail $targetrelease $os $hostmach $osres "$make_target" $buildx $runlogdate
 	
+	outputwebdetail $targetrelease $os $hostmach $osres "$make_target" $buildx $runlogdate
+
 	# Build each machine target
 	#
 	numberoftargets=`echo $targets | wc -w | sed 's/ //'g`
