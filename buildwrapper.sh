@@ -391,7 +391,7 @@ firstrun=1 # used for CVS checks
 while [ 1 = 1 ]; do
 
 	failure=0
-	runlogdate=`date +%Y%m%d%H%M`
+	runlogdate=`date +%Y%m%d-%H%M`
 	runlogdir="$logdir/$runlogdate"
 	mkdir -p $runlogdir
 	whatwedo=""
