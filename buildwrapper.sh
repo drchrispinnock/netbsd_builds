@@ -151,6 +151,8 @@ Web reporting options:
   targets given on the command line override -A and defaults
 "
 
+cmdline="$0 $@"
+
 while [ $# -gt 0 ]; do
         case $1 in
 	-A)	targets="$alltargets"; ;;
@@ -218,6 +220,10 @@ webresultstarget="$webresultsroot/$webresultshostname"
 #
 mkdir -p "$logdir"
 statefile="$logdir/statefile"
+
+# CMDline
+#
+echo "$cmdline" > $logdir/command_line.sh
 
 # Check for x sources
 xflags=""
