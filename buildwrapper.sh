@@ -423,7 +423,7 @@ while [ 1 = 1 ]; do
 	
 		# Update from CVS
 		#
-		cvsdate=`date +%Y%m%d%H%M`
+		cvsdate=`date +%Y%m%d-%H%M`
 		cvslogfile="$runlogdir/$cvsdate-cvsupdate.txt"
 
 		
