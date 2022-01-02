@@ -463,7 +463,7 @@ while [ 1 = 1 ]; do
 			if [ "$?" = "1" ]; then
 				if [ "$firstrun" != "1" ]; then			
 					# Second run wait
-					decho "No changes in sources since last update - sleeping"
+					iecho "No changes in sources since last update - sleeping"
 					sleep $sleepbetween
 					continue
 
