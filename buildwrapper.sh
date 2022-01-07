@@ -16,6 +16,13 @@ webresultsroot="/buildres"
 webresults=1
 branch=""
 
+# Environment variables
+#
+[ -z "$MKDEBUG" ] && MKDEBUG=no
+[ -z "$MKDEBUGKERNEL" ] && MKDEBUGKERNEL=no
+[ -z "$MKDEBUGTOOLS" ] && MKDEBUGTOOLS=yes
+export MKDEBUG MKDEBUGKERNEL MKDEBUGTOOLS
+
 # NFS doesn't work for all, so provide somewhere to copy webresults
 #
 copywebresultsroot=""
