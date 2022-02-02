@@ -204,7 +204,7 @@ print OUT "<table align=\"center\">";
 #
 print OUT "<tr><$_td></td>";
 foreach my $host (@Hosts) {
-	print OUT "<$_td>$realhost{$host}</td>";
+	print OUT "<$_td><strong>$realhost{$host}</strong></td>";
 }
 print OUT "</tr>\n";
 
