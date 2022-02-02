@@ -7,7 +7,7 @@
 
 # My preferred targets
 #
-mypref="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbarmv4-el evbarmv5-el evbarmv6-el macppc riscv"
+mypref="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbarmv4-el evbarmv5-el evbarmv6-el alpha macppc riscv"
 targets="$mypref" # Default
 
 # Directory for outputting results files for a web interface
