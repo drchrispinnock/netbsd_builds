@@ -1,15 +1,10 @@
 #!/bin/sh
 
-# Use this direct for FreeBSD or OpenBSD
-# Linux will need addition packages
-
 cdn='http://nycdn.netbsd.org/pub/NetBSD-daily/HEAD/latest/source/sets/'
 sourcefiles="src.tgz syssrc.tgz sharesrc.tgz gnusrc.tgz xsrc.tgz"
 
-machine="amd64"
-jobs=8
-
-if [ "$1" = "curl" ]; then
+which curl > /dev/null 2>&1
+if [ "$?" = "0" ]; then
 	curl=1
 fi
 
@@ -35,19 +30,3 @@ for i in $sourcefiles; do
 	[ "$?" != "0" ] && echo "Error extracting $i" >&2 && exit 1
 done
 
-cd usr/src
-
-echo "===> Building test $machine build" >&2
-sleep 1
-
-./build.sh -j $jobs -U -m $machine build > ../../build-log 2>&1
-[ "$?" != "0" ] && echo "Error building!" >&2 && exit 1
-
-echo "===> Building test $machine release" >&2
-sleep 1
-
-./build.sh -j $jobs -U -m $machine release > ../../release-log 2>&1
-[ "$?" != "0" ] && echo "Error building release!" >&2 && exit 1
-
-# Need to preserve the logs somewhere
-#

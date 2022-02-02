@@ -10,11 +10,13 @@
 mypref="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbarmv4-el evbarmv5-el evbarmv6-el alpha macppc riscv"
 targets="$mypref" # Default
 
-# Directory for outputting results files for a web interface
+
+# Environment variables
 #
-webresultsroot="/buildres"
-webresults=1
-branch=""
+[ -z "$MKDEBUG" ] && MKDEBUG=no
+[ -z "$MKDEBUGKERNEL" ] && MKDEBUGKERNEL=no
+[ -z "$MKDEBUGTOOLS" ] && MKDEBUGTOOLS=yes
+export MKDEBUG MKDEBUGKERNEL MKDEBUGTOOLS
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
 #
@@ -119,13 +121,19 @@ fi
 sourceroot=`(cd .. && pwd)`
 logdir=$sourceroot/buildlogs
 
+# Directory for outputting results files for a web interface
+#
+webresultsroot="$sourceroot/buildres"
+webresults=1
+branch=""
+
 USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir] 
 		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [-w webroot] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
   -c  don't update CVS on first build run
-  -q  quiet mode
-  -Q  very quiet mode
+  -q  very quiet mode
+  -Q  headless
   -k  keep successful logs
   -D  don't supply -u to build.sh
   -h  print this message
@@ -165,8 +173,8 @@ while [ $# -gt 0 ]; do
 
 # Logging options
 #
-        -q)	quiet=1; ;;
-        -Q)	quiet=2; ;;
+        -q)	quiet=2; ;;
+        -Q)	quiet=3; ;;
         -k)	keeplogs=1; ;;
 
 # Don't pass -u
@@ -228,7 +236,7 @@ echo "$cmdline" > $logdir/command_line.sh
 # Check for x sources
 xflags=""
 if [ "$buildx" = "1" ] && [ ! -d "$sourceroot/xsrc" ]; then
-	echo "Cannot find xsrc - ignoring" >&2
+	[ "$quiet" != "3" ] && echo "Cannot find xsrc - ignoring" >&2
 	buildx="0"
 fi
 
@@ -294,7 +302,7 @@ outputwebcvs() {
 cleanwebip() {
 	# clean up the in progress files
 	if [ -d "$webresultstarget/build" ]; then
-		cleanlist=`grep -l 'status|PROG' "$webresultstarget"/build/*`
+		cleanlist=`grep -l 'status|PROG' "$webresultstarget"/build/* 2>&1 >/dev/null`
 		for f in $cleanlist; do
 			rm -f $f
 		done
@@ -338,7 +346,9 @@ decho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
-	[ "$quiet" != "2" ] && del && printf "\r$dt $stub$1"
+	if [ "$quiet" != "2" ] && [ "$quiet" != "3" ]; then
+		del && printf "\r$dt $stub$1"
+	fi
 	echo "$dt: $stub$1" >> $masterlogfile
 }
 
@@ -349,7 +359,9 @@ qecho() {
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
 	del
-	printf "\r$dt $stub$1"
+	if [ "$quiet" != "3" ]; then
+		printf "\r$dt $stub$1"
+	fi
 	echo "$dt $stub$1" >> $masterlogfile
 }
 
@@ -359,8 +371,10 @@ iecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
-	del
-	printf "\r$dt $stub$1\n"
+	if [ "$quiet" != "3" ]; then 
+		del
+		printf "\r$dt $stub$1\n"
+	fi
 	echo "$dt $stub$1" >> $masterlogfile
 }
 
@@ -369,8 +383,10 @@ fecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
-	del
-	printf "\r$dt \033[31;1m$stub$1\033[0m\n"
+	if [ "$quiet" != "3" ]; then
+		del
+		printf "\r$dt \033[31;1m$stub$1\033[0m\n"
+	fi
 	echo "$dt $stub$1" >> $masterlogfile
 	echo "$dt $stub$1" >> $faillogfile
 }
@@ -463,7 +479,7 @@ while [ 1 = 1 ]; do
 			if [ "$?" = "1" ]; then
 				if [ "$firstrun" != "1" ]; then			
 					# Second run wait
-					decho "No changes in sources since last update - sleeping"
+					iecho "No changes in sources since last update - sleeping"
 					sleep $sleepbetween
 					continue
 
@@ -621,6 +637,13 @@ while [ 1 = 1 ]; do
 
 	# If we are a one shot pony, let's exit here
 	[ "$continuous" != "1" ] && exit 0;
+
+	if [ "$softwareupdate" == "1" ]; then
+		where=`pwd`
+		cd `dirname $0` && git pull
+		cd $where && $logdir/command_line.sh &
+		exit 0
+	fi
 
 	updatecvs=1 # Update CVS next time regardless
 done
