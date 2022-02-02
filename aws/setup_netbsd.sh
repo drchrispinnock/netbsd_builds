@@ -1,15 +1,13 @@
 #!/bin/sh
 
 # Use this direct for FreeBSD or OpenBSD
-# Linux will need addition packages
+# Linux will need additional packages
 
 cdn='http://nycdn.netbsd.org/pub/NetBSD-daily/HEAD/latest/source/sets/'
 sourcefiles="src.tgz syssrc.tgz sharesrc.tgz gnusrc.tgz xsrc.tgz"
 
-machine="amd64"
-jobs=8
-
-if [ "$1" = "curl" ]; then
+which curl > /dev/null 2>&1
+if [ "$?" = "0" ]; then
 	curl=1
 fi
 
