@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Use this direct for FreeBSD or OpenBSD
-# Linux will need additional packages
-
 cdn='http://nycdn.netbsd.org/pub/NetBSD-daily/HEAD/latest/source/sets/'
 sourcefiles="src.tgz syssrc.tgz sharesrc.tgz gnusrc.tgz xsrc.tgz"
 
