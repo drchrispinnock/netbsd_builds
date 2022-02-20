@@ -358,8 +358,8 @@ qecho() {
 	stub=""
 	[ "$whatwedo" != "" ] && stub="$whatwedo "
 	dt=`date +"$date_format"`
-	del
 	if [ "$quiet" != "3" ]; then
+		del
 		printf "\r$dt $stub$1"
 	fi
 	echo "$dt $stub$1" >> $masterlogfile
