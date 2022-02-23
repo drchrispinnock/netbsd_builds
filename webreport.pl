@@ -189,15 +189,6 @@ print OUT "<link rel=\"shortcut icon\" href=\"./favicon.ico\" type=\"image/x-ico
 print OUT "</head><body>";
 print OUT "<h1 align=\"center\">NetBSD cross-building status</h1>\n";
 
-print OUT "<table align=\"center\">";
-print OUT "<tr><td><b>Key</b></td>";
-print OUT "<td align=\"center\" bgcolor=\"$okcolor\">Success</td>";
-print OUT "<td align=\"center\" bgcolor=\"$failcolor\">Failure</td>";
-print OUT "<td align=\"center\" bgcolor=\"$prokcolor\">Success<br>(previously)</td>" if ($okcolor ne $prokcolor);
-print OUT "<td align=\"center\" bgcolor=\"$prfailcolor\">Failure<br>(previously)</td>";
-print OUT "<td align=\"center\" bgcolor=\"$progcolor\">In Progress</td>";
-print OUT "<td align=\"center\" bgcolor=\"$unknowncolor\">Unknown</td>";
-print OUT "</tr></table>";
 
 print OUT "<table align=\"center\">";
 # HEADINGS
@@ -289,6 +280,15 @@ foreach my $platform (@Platforms) {
 }
 
 print OUT "</table>";
+print OUT "<table align=\"center\">";
+print OUT "<tr><td><b>Key</b></td>";
+print OUT "<td align=\"center\" bgcolor=\"$okcolor\">Success</td>";
+print OUT "<td align=\"center\" bgcolor=\"$failcolor\">Failure</td>";
+print OUT "<td align=\"center\" bgcolor=\"$prokcolor\">Success<br>(previously)</td>" if ($okcolor ne $prokcolor);
+print OUT "<td align=\"center\" bgcolor=\"$prfailcolor\">Failure<br>(previously)</td>";
+print OUT "<td align=\"center\" bgcolor=\"$progcolor\">In Progress</td>";
+print OUT "<td align=\"center\" bgcolor=\"$unknowncolor\">Unknown</td>";
+print OUT "</tr></table>";
 
 my $dispdate = `date`;
 print OUT "<center><em>Last updated $dispdate</em></center>\n";
