@@ -279,7 +279,7 @@ outputwebdetail() {
 		
 		makewebresultsdir
 		echo "target|$1" > "$webresultstarget/detail.txt"
-		echo "hostname|$hostname" >> "$webresultstarget/detail.txt"
+		echo "hostname|$webresultshostname" >> "$webresultstarget/detail.txt"
 		echo "hostos|$2" >> "$webresultstarget/detail.txt"
 		echo "hostmach|$3" >> "$webresultstarget/detail.txt"
 		echo "hostver|$4" >> "$webresultstarget/detail.txt"
