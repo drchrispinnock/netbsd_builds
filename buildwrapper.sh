@@ -10,12 +10,21 @@
 mypref="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbarmv4-el evbarmv5-el evbarmv6-el alpha macppc riscv"
 targets="$mypref" # Default
 
+hostos=`uname -s`
+
+# Host specific things here
+#
+if [ "$hostos" = "Darwin" ]; then
+	MKDEBUGTOOLS=no		# yes breaks Darwin builds
+fi
+
 
 # Environment variables
 #
 [ -z "$MKDEBUG" ] && MKDEBUG=no
 [ -z "$MKDEBUGKERNEL" ] && MKDEBUGKERNEL=no
-[ -z "$MKDEBUGTOOLS" ] && MKDEBUGTOOLS=yes
+[ -z "$MKDEBUGTOOLS" ] && MKDEBUGTOOLS=no
+
 export MKDEBUG MKDEBUGKERNEL MKDEBUGTOOLS
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
