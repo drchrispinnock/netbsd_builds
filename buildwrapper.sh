@@ -647,7 +647,7 @@ while [ 1 = 1 ]; do
 	# If we are a one shot pony, let's exit here
 	[ "$continuous" != "1" ] && exit 0;
 
-	if [ "$softwareupdate" == "1" ]; then
+	if [ "$softwareupdate" = "1" ]; then
 		where=`pwd`
 		cd `dirname $0` && git pull
 		cd $where && $logdir/command_line.sh &
