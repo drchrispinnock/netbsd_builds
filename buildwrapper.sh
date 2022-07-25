@@ -24,7 +24,6 @@ fi
 [ -z "$MKDEBUG" ] && MKDEBUG=no
 [ -z "$MKDEBUGKERNEL" ] && MKDEBUGKERNEL=no
 [ -z "$MKDEBUGTOOLS" ] && MKDEBUGTOOLS=no
-
 export MKDEBUG MKDEBUGKERNEL MKDEBUGTOOLS
 
 # NFS doesn't work for all, so provide somewhere to copy webresults
