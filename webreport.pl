@@ -225,7 +225,7 @@ foreach my $host (@Hosts) {
 }
 print OUT "</tr>\n";
 
-print OUT "<tr><td><em>CVS date</em></td>";
+print OUT "<tr><td><em>Source date</em></td>";
 foreach my $host (@Hosts) {
 	my $ot = "";
 	$ot = $hostcvs{$host} if $hostcvs{$host};
