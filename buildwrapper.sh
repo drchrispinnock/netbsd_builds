@@ -455,7 +455,7 @@ while [ 1 = 1 ]; do
 		
 		if [ "$updatecvs" != "0" ]; then
 
-			outputwebcvs $pubcvsdate
+			outputwebcvs "$pubcvsdate"
 			iecho "Updating src from cvs..."
 			[ "$quiet" = "0" ] && tail -f $cvslogfile &
 			cvs -q up -dP >> "$cvslogfile" 2>&1
