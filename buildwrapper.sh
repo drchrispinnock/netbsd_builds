@@ -140,7 +140,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
 		[ -t build|release] [-n] [-Z] [-R] [-r] [-W] [-w webroot] [targets]
   -A  build all architecture targets
   -1  just run once, not continuously
-  -c  don't update CVS on first build run
+  -c  don't update source on first build run
   -q  very quiet mode
   -Q  headless
   -k  keep successful logs
@@ -162,7 +162,7 @@ USAGE="$0 [-A] [-1] [-c] [-q] [-k] [-D] [-h] [-x] [-j n] [-l logdir]
 Web reporting options:
   -W don't output web results
   -w webroot - build web results into the specified directory
-	-b branch - display the branch ID instead of the CVS date
+	-b branch - display the branch ID instead of the source date
   -H hostid - use a different hostname for segregating & outputting results
   -y webroottarget - copy the web results to a server via SSH
   targets given on the command line override -A and defaults
@@ -417,7 +417,7 @@ if [ -f "$statefile" ]; then
 	previous=1
 fi
 
-firstrun=1 # used for CVS checks
+firstrun=1 # used for source checks
 
 while [ 1 = 1 ]; do
 
@@ -446,15 +446,16 @@ while [ 1 = 1 ]; do
 		iecho "Detected state. Attempting to start from $state"
 	else
 	
-		# Update from CVS
+		# Update from source
 		#
 		cvsdate=`date +%Y%m%d-%H%M`
 		cvslogfile="$runlogdir/$cvsdate-cvsupdate.txt"
+		pubcvsdate=`date +"%d/%m/%Y %H:%M"`
 
 		
 		if [ "$updatecvs" != "0" ]; then
 
-			outputwebcvs $cvsdate
+			outputwebcvs $pubcvsdate
 			iecho "Updating src from cvs..."
 			[ "$quiet" = "0" ] && tail -f $cvslogfile &
 			cvs -q up -dP >> "$cvslogfile" 2>&1
