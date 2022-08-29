@@ -7,7 +7,7 @@
 
 # My preferred targets
 #
-mypref="amd64 i386 sparc64 evbppc hpcarm evbmips64-eb evbarmv4-el evbarmv5-el evbarmv6-el alpha macppc riscv"
+mypref="amd64 i386 sparc64 evbppc evbmips64-eb evbarmv4-el evbarmv5-eb alpha macppc riscv"
 targets="$mypref" # Default
 
 hostos=`uname -s`
@@ -48,6 +48,7 @@ removestate=0
 # due to no CVS updates
 #
 sleepbetween=18000	# 5 hours
+sleepbetween=300	# 5 minutes
 
 # Tier 1 platforms (subset)
 #
@@ -447,10 +448,10 @@ while [ 1 = 1 ]; do
 	
 		# Update from source
 		#
+		cvsfail=0
 		cvsdate=`date +%Y%m%d-%H%M`
 		cvslogfile="$runlogdir/$cvsdate-cvsupdate.txt"
 		pubcvsdate=`date +"%d/%m/%Y %H:%M"`
-
 		
 		if [ "$updatecvs" != "0" ]; then
 
@@ -460,16 +461,16 @@ while [ 1 = 1 ]; do
 			cvs -q up -dP >> "$cvslogfile" 2>&1
 			
 			if [ "$?" != "0" ]; then
-				fecho "cvs update failed - bailing"
-				exit 6
+				fecho "cvs update failed"
+				cvsfail=1
 			fi
 
-			if [ "$buildx" = "1" ]; then 
+			if [ "$buildx" = "1" ] && [ "$cvsfail" = "0" ]; then 
 				iecho "Updating xsrc from cvs..."
 				( cd ../xsrc && cvs -q up -dP) >> "$cvslogfile" 2>&1
 				if [ "$?" != "0" ]; then
-					fecho "cvs update failed - bailing"
-					exit 6
+					fecho "cvs update failed"
+					cvsfail=1
 				fi
 			fi
 
@@ -478,23 +479,29 @@ while [ 1 = 1 ]; do
 				fecho "CONFLICTS IN CVS UPDATE - BAILING"
 				exit 5
 			fi
-			
-			egrep "^M" "$cvslogfile" 2>&1 >/dev/null
-			if [ "$?" = "0" ]; then
-				fecho "Warning - merges detected in source tree"
-			fi
+		
 
-			egrep "^(U|P|M)" "$cvslogfile" 2>&1 >/dev/null
-			if [ "$?" = "1" ]; then
-				if [ "$firstrun" != "1" ]; then			
-					# Second run wait
-					iecho "No changes in sources since last update - sleeping"
-					sleep $sleepbetween
-					continue
+			if [ "$cvsfail" = "1" ]; then
+				fecho "CVS update failed - sleeping for retry"
+				sleep $sleepbetweencvsfail
+				continue
+			else	
+				egrep "^M" "$cvslogfile" 2>&1 >/dev/null
+				if [ "$?" = "0" ]; then
+					fecho "Warning - merges detected in source tree"
+				fi
+
+				egrep "^(U|P|M)" "$cvslogfile" 2>&1 >/dev/null
+				if [ "$?" = "1" ]; then
+					if [ "$firstrun" != "1" ]; then			
+						# Second run wait
+						iecho "No changes in sources since last update - sleeping"
+						sleep $sleepbetween
+						continue
 
 				fi	
-			qecho "No changes in sources since last update"
-			firstrun=0
+				firstrun=0
+			fi
 
 			fi
 
