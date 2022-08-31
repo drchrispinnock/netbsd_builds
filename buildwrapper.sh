@@ -302,7 +302,7 @@ outputwebdetail() {
 		which cc >> "$webresultstarget/about.txt"
 		which c++ >> "$webresultstarget/about.txt"
 		cc --version >> "$webresultstarget/about.txt"
-		[ " -f "$webresultstarget/about-static.txt" ] && \
+		[ -f "$webresultstarget/about-static.txt" ] && \
 			cat "$webresultstarget/about-static.txt" >> "$webresultstarget/about.txt"
 	fi
 	
