@@ -268,6 +268,7 @@ date_format="%d/%m/%Y %H:%M"
 makewebresultsdir() {
 	mkdir -p "$webresultstarget/build"
 	mkdir -p "$webresultstarget/logs"
+
 }
 
 outputwebdetail() {
@@ -296,6 +297,11 @@ outputwebdetail() {
 		echo "param|$param" >> "$webresultstarget/detail.txt"
 		echo "maketarget|$5" >> "$webresultstarget/detail.txt"
 		echo "withX|$6" >> "$webresultstarget/detail.txt"
+
+		uname -a > "$webresultstarget/about.txt"
+		which cc >> "$webresultstarget/about.txt"
+		which c++ >> "$webresultstarget/about.txt"
+		cc --version >> "$webresultstarget/about.txt"
 	fi
 	
 }
