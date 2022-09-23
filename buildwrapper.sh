@@ -48,7 +48,7 @@ removestate=0
 # due to no CVS updates
 #
 sleepbetween=18000	# 5 hours
-sleepbetween=300	# 5 minutes
+sleepbetweencvsfail=300	# 5 minutes
 
 # Tier 1 platforms (subset)
 #
