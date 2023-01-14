@@ -163,7 +163,7 @@ my @Platforms = sort(keys(%Platforms));
 
 # Sort by OS then host
 @Hosts = sort(@Hosts);
-my @_os = sort(values %hostos);
+my @_os = uniq(sort(values %hostos));
 my @_hostlist;
 foreach my $_o (@_os) {
         foreach my $_i (@Hosts) {
