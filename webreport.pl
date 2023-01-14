@@ -11,6 +11,7 @@
 
 use strict;
 use warnings;
+use List::MoreUtils qw(uniq);
 
 my $webresultsroot="/buildres"; 
 
@@ -44,6 +45,7 @@ my %hostmach;
 my %hostver;
 my %hostbuilddate;
 my %hostcvs;
+my %notes;
 my %realhost;
 
 my %status;
@@ -84,6 +86,14 @@ HOST: while(my $host = readdir $dh) {
 		while(<FILE>) {
 			chomp;
 			$hostcvs{$host}	= $_;
+		}
+		close FILE;
+	}
+	
+	if(open FILE, "$webresultsroot/$host/notes.txt") {
+		$notes{$host} = "";
+		while(<FILE>) {
+			$notes{$host} = $notes{$host}.$_."<br />";
 		}
 		close FILE;
 	}
@@ -151,7 +161,16 @@ HOST: while(my $host = readdir $dh) {
 my @Platforms = sort(keys(%Platforms));
 @Platforms = @TieredPlatforms if $usetiers;
 
+# Sort by OS then host
 @Hosts = sort(@Hosts);
+my @_os = sort(values %hostos);
+my @_hostlist;
+foreach my $_o (@_os) {
+        foreach my $_i (@Hosts) {
+                push @_hostlist, $_i if ($hostos{$_i} eq $_o);
+        }
+}
+@Hosts = @_hostlist;
 
 # Sort
 if ($sort_by_results) {
@@ -195,7 +214,14 @@ print OUT "<table align=\"center\">";
 #
 print OUT "<tr><$_td></td>";
 foreach my $host (@Hosts) {
-	print OUT "<$_td><strong>$realhost{$host}</strong></td>";
+
+	my $_link = "";
+	$_link = "/$host/about.txt" if ( -f "$webresultsroot/$host/about.txt" );
+	print OUT "<$_td><strong>";
+	print OUT "<a href=\"$_link\">" if $_link;
+	print OUT "$realhost{$host}";
+	print OUT "</a>" if $_link;
+	print OUT "</strong></td>";
 }
 print OUT "</tr>\n";
 
@@ -279,6 +305,13 @@ foreach my $platform (@Platforms) {
 
 }
 
+print OUT "<tr><td><em>Notes</em></td>";
+foreach my $host (@Hosts) {
+	my $ot = "";
+	$ot = $notes{$host} if $notes{$host};
+	print OUT "<$_td>$ot</td>";
+}
+print OUT "</tr>";
 print OUT "</table>";
 print OUT "<table align=\"center\">";
 print OUT "<tr><td><b>Key</b></td>";
